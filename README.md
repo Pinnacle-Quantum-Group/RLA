@@ -264,10 +264,6 @@ References
 
 Appendix — Formal Extensions of the Recursive Lie Algebra Framework
 
-Author: Michael A. Doran Jr.
-Affiliation: Pinnacle Quantum Group
-Date: May 2025
-
 ⸻
 
 Appendix A. Recursive Differential Geometry Foundations
