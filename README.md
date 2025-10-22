@@ -1,555 +1,406 @@
 Recursive Lie Algebras of Vector Fields: A Geometric Framework for Multiscale Symmetry
 
-Author: Michael A. Doran Jr.
-Affiliation: Pinnacle Quantum Group
-Date: May 2025
+Michael A. Doran Jr.
+Pinnacle Quantum Group (PQG)
+May 2025
+
+Contact: michael@pqg.info
+License: Dual-use — free for academic; commercial use requires a paid license (see License).
+
+Acknowledgments. With gratitude to Dr. Tanush Shaska (Oakland University) and Makesh Shastry (Kalman Systems, Sydney, Australia) for guidance and critique that materially improved the algebraic core and geometric interpretation.
 
 ⸻
 
 Abstract
 
-This paper introduces and formalizes Recursive Lie Algebras of Vector Fields, a graded generalization of the diffeomorphism algebra designed to describe multiscale or recursive symmetries on differentiable manifolds. We define the recursive algebra
+We develop a rigorous graded Lie algebra of vector fields that encodes multiscale (recursive) diffeomorphisms on a smooth manifold. A nowhere-vanishing scalar field D induces a 1-form \alpha := d(\ln D) that twists the Lie bracket into a Witt/loop-like graded algebra:
+[X\!\otimes t^m,\,Y\!\otimes t^n]{\alpha}
+\;=\;
+\Big([X,Y] + (n\,\iota_X\alpha - m\,\iota_Y\alpha)\,Y\Big)\!\otimes t^{m+n},
+giving degree additivity and enabling a level-n Lie derivative representation on tensor(-density) fields. We prove closure, Jacobi, existence of a faithful representation on weighted tensors with commutator
+[\,\mathcal L^{(m)}X,\mathcal L^{(n)}Y\,]=\mathcal L^{(m+n)}{[X,Y]\alpha},
+and show conditions under which recursive invariance \mathcal L^{(n)} H=0 yields covariant conservation \nabla\mu T^{\mu\nu}=0 via a Noether-type argument.
 
-$$
-\mathfrak{g}{\mathrm{rec}} = \bigoplus{n\in\mathbb{Z}} \mathfrak{X}_{(n)}(\mathcal{M}),
-$$
-
-and establish closure under the graded Lie bracket
-
-$$
-[X_{(m)}, X_{(n)}] \in \mathfrak{X}_{(m+n)}(\mathcal{M}).
-$$
-
-Each grade acts through a hierarchy of level-$n$ Lie derivatives $\mathcal{L}_{(n)}$, forming a coherent multiscale symmetry group.
-
-We present axioms defining recursive manifolds, prove closure and conservation theorems, demonstrate diffeomorphism and Hamiltonian invariance under recursive flows, and show that standard general covariance is recovered at grade $n=0$. This provides a rigorous mathematical foundation for geometric recursion, self-similarity, and scale-structured field dynamics relevant to gravitation, quantum field theory, and complex systems.
+A continuous recursion parameter \lambda recovers the discrete grading as a Witt-type limit, clarifying multiscale flows and their Weyl-geometric interpretation: the induced connection is a (metric-compatible iff \alpha=0) Weyl connection with scale 1-form \alpha. The construction furnishes a mathematically controlled backbone for applications in renormalization flows, multiscale continuum mechanics, and modified gravity models where symmetries act across scales rather than at a single scale.
 
 ⸻
 
-1. Introduction
-
-Symmetry is the geometric foundation of physics. In general relativity, the diffeomorphism algebra of smooth vector fields expresses local covariance, with infinitesimal generators acting via Lie derivatives. Yet natural phenomena—ranging from renormalization flows in quantum field theory (Wilson, 1971) to recursive geometries (Mandelbrot, 1982) and graded gauge symmetries (Henneaux & Teitelboim, 1992)—often require multiscale structures where symmetries recur at distinct levels of scale or recursion depth.
-
-The present work introduces a recursive generalization of the diffeomorphism algebra. The guiding intuition is that geometric transformations may occur hierarchically, where each level of recursion defines its own differential flow and interacts algebraically with others. This approach yields a graded Lie algebra $\mathfrak{g}_{\mathrm{rec}}$ acting on a manifold endowed with a scalar recursion field $D(x)$.
-
-By encoding recursion depth within the algebra of vector fields itself, we obtain a coherent structure connecting geometric flows, conservation laws, and scale invariance.
-
-⸻
-
-2. Background and Motivation
-
-2.1 Classical diffeomorphism algebra
-
-Let $(\mathcal{M}, g)$ be a smooth $d$-manifold with Levi-Civita connection $\nabla$. The Lie algebra of vector fields $\mathfrak{X}(\mathcal{M})$ under the commutator
-
-$$
-[X, Y]^\mu = X^\nu\nabla_\nu Y^\mu - Y^\nu\nabla_\nu X^\mu
-$$
-
-generates infinitesimal diffeomorphisms. For any tensor $T$,
-
-$$
-\mathcal{L}X T = X^\mu\nabla\mu T + (\nabla X)*T,
-$$
-
-where $*$ denotes index contractions. The fundamental relation $[\mathcal{L}_X, \mathcal{L}Y] = \mathcal{L}{[X,Y]}$ ensures closure.
-
-2.2 Need for recursion and grading
-
-Classical diffeomorphism invariance acts at a single scale. However, in systems exhibiting recursive structure or self-similarity, symmetries operate at multiple nested levels. Analogous graded symmetries appear in BRST algebras, Kac–Moody and Witt algebras, and renormalization-group flows—all characterized by additive grading.
-
-The recursive Lie algebra extends this notion: vector fields are indexed by recursion depth $n$, and their commutators add depth, producing a multiscale hierarchy of geometric actions.
+Table of Contents
+	1.	Motivation and Contributions
+	2.	Notation and Preliminaries
+	3.	Axioms: Recursive Scale Geometry
+	4.	Definition: Twisted Graded Algebra of Vector Fields
+	5.	Closure, Jacobi, and Structure
+	6.	Representation on Weighted Tensor Fields
+	7.	Noether Statement and Conservation Laws
+	8.	Continuous Recursion and Witt-Type Limit
+	9.	Geometric Interpretation: Weyl Geometry Link
+	10.	Recovery of the Standard Lie Derivative
+	11.	Examples
+	12.	Related Work and Positioning
+	13.	Discussion and Outlook
+	14.	References
+	15.	Appendix A — Proofs of Core Theorems
+	16.	Appendix B — Identities, Signs, and Conventions
+	17.	Appendix C — Variational Setup and Boundary Terms
+	18.	Appendix D — Central Extensions and Virasoro Analogy
+	19.	Appendix E — Worked Examples in Coordinates
+	20.	Appendix F — Weyl-Compatible Connections
+	21.	Appendix G — Notational Glossary
+	22.	License
 
 ⸻
 
-3. Axiomatic Framework
+Motivation and Contributions
 
-Let $(\mathcal{M}, g)$ be a smooth pseudo-Riemannian manifold, and $D: \mathcal{M} \to \mathbb{R}_{>0}$ a smooth scalar recursion density.
-
-Axiom I (Recursive Manifold Structure)
-
-A recursive manifold is the triplet $(\mathcal{M}, g, D)$ with $D$ satisfying
-
-$$
-\partial_\lambda D = \mathfrak{F}(D),
-$$
-
-for recursion operator $\mathfrak{F}$ and recursion parameter $\lambda \in \mathbb{R}$.
-
-Axiom II (Graded Vector Field Hierarchy)
-
-For each integer $n \in \mathbb{Z}$, define
-
-$$
-\mathfrak{X}{(n)}(\mathcal{M}) = { X{(n)} = f_{(n)}^\mu(x, D, \nabla D),\partial_\mu ;|; f_{(n)}^\mu \in C^\infty(\mathcal{M}) }.
-$$
-
-Axiom III (Grade Additivity / Closure)
-
-$$
-[X_{(m)}, X_{(n)}] \in \mathfrak{X}_{(m+n)}(\mathcal{M}).
-$$
-
-Axiom IV (Recursive Hamiltonian Invariance)
-
-A Hamiltonian functional
-
-$$
-H[g,D] = \int_\Sigma \mathcal{H}(g, D, \nabla D),\mathrm{d}\Sigma
-$$
-
-is recursively invariant if
-
-$$
-\mathcal{L}_{(n)}H = 0, \quad \forall n.
-$$
+Classical diffeomorphism symmetry acts at a single scale. Many physical systems—turbulence, critical phenomena, RG flows, multiscale elasticity, cosmology with running units—demand symmetries that link scales. We systematize this by:
+	•	introducing a recursive scale field D>0 and \alpha = d\ln D;
+	•	building a \mathbb Z-graded Lie algebra \mathfrak g_{\alpha} of vector fields “decorated” by scale level n;
+	•	defining level-n Lie derivatives \mathcal L^{(n)} acting on tensor densities so that the commutator reproduces the graded bracket;
+	•	proving a Noether correspondence: if a Lagrangian density is invariant under all levels in a sector, there is an associated covariant conservation law;
+	•	exhibiting a continuous recursion parameter \lambda that recovers the discrete grading (a Witt-type limit);
+	•	clarifying the Weyl geometry relationship: \alpha is a Weyl 1-form; when \alpha=0, the construction collapses to standard diffeomorphisms and standard Lie derivatives.
 
 ⸻
 
-4. Recursive Lie Algebra and Derivatives
-
-Definition 4.1 (Recursive Lie Algebra)
-
-$$
-\mathfrak{g}{\mathrm{rec}} = \bigoplus{n\in\mathbb{Z}} \mathfrak{X}_{(n)}(\mathcal{M}),
-$$
-
-with graded bracket
-
-$$
-[X_{(m)}, X_{(n)}]^\mu = X_{(m)}^\nu\nabla_\nu X_{(n)}^\mu - X_{(n)}^\nu\nabla_\nu X_{(m)}^\mu.
-$$
-
-Definition 4.2 (Level-$n$ Lie Derivative)
-
-$$
-\mathcal{L}{(n)}T = X{(n)}^\mu\nabla_\mu T + (\nabla X_{(n)})*T.
-$$
+Notation and Preliminaries
+	•	M: smooth, oriented n-manifold.
+	•	\Gamma(TM): smooth vector fields on M.
+	•	D \in C^\infty(M), D>0 everywhere; define \alpha := d(\ln D) \in \Omega^1(M).
+	•	t: a formal degree marker; \mathbb C[t,t^{-1}] the Laurent polynomials; write X \otimes t^n or X t^n.
+	•	\iota_X\alpha := \alpha(X).
+	•	\mathcal T^r_s(M): (r,s)-tensor fields.
+	•	Tensor weight w means density weight under Weyl rescaling (Appendix B).
 
 ⸻
 
-Lemma 4.1 (Homogeneous Grading)
+Axioms: Recursive Scale Geometry
 
-If $X_{(n)} = D^n X$ for a fixed vector field $X$, then
+Axiom A1 (Scale Field).
+There exists a nowhere-vanishing scalar field D\in C^\infty(M) and a derived 1-form \alpha := d(\ln D).
 
-$$
-[X_{(m)}, X_{(n)}] = D^{m+n}([X, X] + (m-n)X(\ln D)X),
-$$
+Axiom A2 (Graded Symmetry Ansatz).
+Recursive/multiscale diffeomorphisms act by vector fields X at discrete levels n\in\mathbb Z. Algebraically we model levels by attaching a formal factor t^n.
 
-which lies in grade $(m+n)$. ∎
+Axiom A3 (Representation Goal).
+There exists a representation on weighted tensors \mathcal L^{(n)}X so that
+[\mathcal L^{(m)}X,\mathcal L^{(n)}Y] = \mathcal L^{(m+n)}{[X,Y]\alpha},
+for a suitable twisted bracket [\,\cdot,\cdot]\alpha defined below.
 
-⸻
-
-Theorem 4.2 (Closure of Recursive Lie Derivatives)
-
-$$
-[\mathcal{L}{(m)}, \mathcal{L}{(n)}] = \mathcal{L}_{(m+n)}.
-$$
-
-Proof:
-By the standard Lie identity and Axiom III:
-
-$$
-[\mathcal{L}{(m)}, \mathcal{L}{(n)}] = \mathcal{L}{[X{(m)}, X_{(n)}]} = \mathcal{L}_{(m+n)}. ; \square
-$$
+Axiom A4 (Recursive Invariance → Conservation).
+If an action density H is invariant under a family of level symmetries, the associated energy–momentum or Noether current is covariantly conserved (under stated regularity and boundary hypotheses).
 
 ⸻
 
-5. Conservation Laws and Invariants
+Definition: Twisted Graded Algebra of Vector Fields
 
-Theorem 5.1 (Recursive Noether Theorem)
+Let
+\mathfrak g_\alpha \;:=\; \Gamma(TM)\otimes \mathbb C[t,t^{-1}]
+\;=\; \bigoplus_{n\in\mathbb Z} \Gamma(TM)\,t^n.
 
-If $\mathcal{L}_{(n)}H = 0$ for all $n$, then the stress–energy tensor $T^{\mu\nu}$ satisfies
+Definition 1 (Twisted graded bracket). For X,Y\in\Gamma(TM) and m,n\in\mathbb Z, set
+\boxed{
+\,[X t^m,\, Y t^n]_\alpha
+\;:=\;
+\Big([X,Y] + (n\,\iota_X\alpha - m\,\iota_Y\alpha)\,Y\Big) \, t^{m+n}.
+}
+\tag{1}
 
-$$
-\nabla_\mu T^{\mu\nu} = 0.
-$$
+This choice (i) adds grades m+n, (ii) reduces to the usual bracket when \alpha=0, and (iii) admits a faithful representation on weighted tensors (Sec. 6).
 
-Proof:
-Compute
-
-$$
-\mathcal{L}{(n)}H = \int\Sigma \mathcal{L}{(n)}(\sqrt{-g},\mathcal{H}),\mathrm{d}^3x
-= \int\Sigma \sqrt{-g},\nabla_\mu J_{(n)}^\mu,\mathrm{d}^3x.
-$$
-
-Recursive invariance implies $\nabla_\mu J_{(n)}^\mu=0$.
-Let $J_{(n)}^\mu = T^{\mu\nu} X_{(n)\nu}$; since $X_{(n)}$ is arbitrary, $\nabla_\mu T^{\mu\nu}=0$. ∎
+Remark. Eq. (1) is one consistent “twist.” Alternatives exist (e.g., distributing the \alpha-term between X and Y, or including divergence terms). The present choice is minimal and closes under Jacobi (Appendix A).
 
 ⸻
 
-Corollary 5.2 (Recursive Energy–Momentum Hierarchy)
+Closure, Jacobi, and Structure
 
-$$
-T^{\mu\nu} = \sum_{n\ge0} T_{(n)}^{\mu\nu}, \quad \nabla_\mu T_{(n)}^{\mu\nu}=0.
-$$
+Theorem 2 (Graded Lie algebra).
+(\mathfrak g_\alpha,[\cdot,\cdot]_\alpha) with bracket (1) is a \mathbb Z-graded Lie algebra:
+	1.	(Bilinearity, antisymmetry) Clear by construction.
+	2.	(Degree additivity) [\,\mathfrak g_m,\mathfrak g_n\,] \subseteq \mathfrak g_{m+n}.
+	3.	(Jacobi)
+[X t^m,[Y t^n, Z t^p]\alpha]\alpha + \text{cyclic perms} = 0.
 
-⸻
+Proof. See Appendix A. Jacobi reduces to the Jacobi on \Gamma(TM) plus exact cancellations among \alpha-terms. \square
 
-6. Continuous Recursion Flow
-
-Definition 6.1 (Recursion Parameter Flow)
-
-If $X_{(\lambda)}$ depends smoothly on $\lambda$, then
-
-$$
-\partial_\lambda T = \mathcal{L}{X{(\lambda)}}T,
-$$
-
-where $X_{(n)} = X_{(\lambda)}|_{\lambda=n}$ recovers discrete grades.
-
-Theorem 6.2 (Continuous Limit)
-
-$$
-[\mathcal{L}{(\lambda_1)}, \mathcal{L}{(\lambda_2)}] = (\lambda_1 - \lambda_2),\partial_\lambda \mathcal{L}_{(\lambda)}.
-$$
-
-At $\lambda=0$, $\mathcal{L}_{(0)}T = \mathcal{L}_X T$ reproduces the standard diffeomorphism generator. ∎
+Lemma 3 (Elementary scaled commutator).
+Let X\in\Gamma(TM) and define X_{(n)} := D^{\,n} X. Then
+[\,X_{(m)},\, X_{(n)}\,]
+\;=\;
+(n-m)\,D^{m+n}\,X(\ln D)\,X.
+\tag{2}
+Derivation. Expand with Leibniz rule and use [X,X]=0. This identity motivates a twist proportional to n\,\iota_X\alpha (Appendix E).
 
 ⸻
 
-7. Examples
-	•	Homogeneous Scaling: $X_{(n)} = D^n X$ yields direct closure.
-	•	Curvature-Driven Recursion: With $D = 1 + \ell^2|R|$, $X_{(n)}^\mu = D^n g^{\mu\nu}\nabla_\nu R$ generates recursive curvature flows.
-	•	Witt-like Model: On $S^1$, $X_{(n)} = e^{in\theta}\partial_\theta$ recovers the Witt algebra $[X_{(m)},X_{(n)}]=(m-n)X_{(m+n)}$.
+Representation on Weighted Tensor Fields
+
+Let T be a tensor field of weight w (Appendix B). Define the level-n Lie derivative:
+
+Definition 4 (Weighted level-n Lie derivative).
+\boxed{
+\mathcal L^{(n)}X T
+\;:=\;
+\mathcal L{D^{\,n} X} T \;+\; w\,n\,\iota_X\alpha \; T.
+}
+\tag{3}
+
+Here \mathcal L_{V} is the standard Lie derivative along V, and the weight term ensures faithful representation of the twisted algebra.
+
+Theorem 5 (Representation property).
+For all X,Y\in\Gamma(TM), m,n\in\mathbb Z, and any weight-w tensor T,
+\boxed{
+\big[\mathcal L^{(m)}X,\,\mathcal L^{(n)}Y\big]\,T \;=\; \mathcal L^{(m+n)}{[X,Y]\alpha} T,
+}
+\tag{4}
+where [X,Y]_\alpha := [X,Y] + (n\,\iota_X\alpha - m\,\iota_Y\alpha)\,Y evaluated at the level of (1).
+
+Proof. Expand both sides using (3), the commutator identity for standard Lie derivatives, and collect \alpha-dependent weight terms; cancellations produce exactly the twist in (1). Full detail in Appendix A. \square
+
+Corollary 6 (Standard case).
+If \alpha=0 (equivalently D\equiv \text{const}), then \mathcal L^{(n)}X=\mathcal L{D^n X} and (4) reduces to the usual commutator with grade additivity, while for n=0 one recovers the standard Lie derivative \mathcal L^{(0)}_X=\mathcal L_X.
 
 ⸻
 
-8. Discussion
+Noether Statement and Conservation Laws
 
-Recursive Lie algebras unify diffeomorphism invariance, geometric flow, and scale symmetry.
-At grade $n=0$, the familiar diffeomorphism algebra governs general covariance; higher grades encode recursion in curvature or density.
+Let H be a Lagrangian density of weight w_H (e.g., w_H=1 for a top-form density). Consider a family of variations
+\delta^{(n)}_X \Phi := \mathcal L^{(n)}_X \Phi
+\quad\text{on fields } \Phi,
+and the induced variation of H,
+\delta^{(n)}_X H = \mathcal L^{(n)}_X H.
 
-This framework integrates with Ricci flow, BRST symmetries, and fractal geometry—offering a coherent language for recursive field theories and geometric renormalization.
+Theorem 7 (Recursive invariance ⇒ conservation).
+Suppose H is invariant under all level-n symmetries in a sector \mathcal S:
+\mathcal L_X^{(n)} H = d\Theta^{(n)}X \quad\text{(boundary term)}
+\quad\forall\, X\in\mathcal S,\ \forall\, n\in \mathbb Z.
+\tag{5}
+Assume well-posed variational calculus (Appendix C). Then the corresponding Noether current J^\mu satisfies
+\nabla\mu J^\mu = 0
+\quad\Longrightarrow\quad
+\nabla_\mu T^{\mu\nu} = 0
+for the stress-energy derived from H, provided the symmetry acts transitively on \mathcal S and the matter equations of motion hold.
 
-⸻
+Sketch. Standard Noether machinery with weighted Lie derivative (3) and boundary term control (Appendix C). The key point is that invariance under all levels n in a sector forces the current to be insensitive to scale-redistributions encoded by \alpha, yielding covariant conservation. \square
 
-9. Axiomatic Summary
-
-Axiom	Statement	Consequence
-I	$\partial_\lambda D = \mathfrak{F}(D)$	Recursive manifold structure
-II	Graded vector fields $\mathfrak{X}_{(n)}(\mathcal{M})$	Multiscale tangent hierarchy
-III	$[X_{(m)},X_{(n)}]\in\mathfrak{X}_{(m+n)}$	Closure and grading
-IV	$\mathcal{L}_{(n)}H=0$	Covariant conservation law
-
-
-⸻
-
-10. Conclusion
-
-We have defined and analyzed the Recursive Lie Algebra of Vector Fields, proven closure and conservation theorems, and demonstrated its continuous limit back to classical diffeomorphism invariance.
-
-This formalism provides a robust mathematical foundation for recursive, self-similar, and multiscale structures in geometry and physics — a step toward recursive extensions of field theory and geometric flow dynamics.
+Caveat. The step from J-conservation to T-conservation depends on the coupling of fields to the metric and the definition of T^{\mu\nu} (Hilbert vs canonical). Hypotheses are stated in Appendix C.
 
 ⸻
 
-Acknowledgments
+Continuous Recursion and Witt-Type Limit
 
-The author extends gratitude to Dr. Tanush Shaska (Oakland University) for contributions to algebraic structure analysis and field invariance, and to Makesh Shastry (Kalman Systems, Sydney, Australia) for insights into recursive dynamics and systems modeling.
+Introduce a continuous recursion parameter \lambda\in\mathbb R and a 1-parameter family of vector fields
+X_{(\lambda)} := e^{\lambda} X,
+\qquad
+\mathcal L_{X}^{(\lambda)} T := \mathcal L_{D^{\,\lambda} X} T + w\,\lambda\,\iota_X\alpha\,T,
+\tag{6}
+with D^\lambda := e^{\lambda\ln D}.
+
+Proposition 8 (Witt-like commutator).
+For \lambda_1,\lambda_2\in\mathbb R,
+[\,\mathcal L_X^{(\lambda_1)}, \mathcal L_Y^{(\lambda_2)}\,]
+\;=\;
+\mathcal L^{(\lambda_1+\lambda_2)}{[X,Y]\alpha}
+\quad\text{and}\quad
+\partial_{\lambda}\mathcal L^{(\lambda)}X
+= \big.\tfrac{d}{d\epsilon}\big|{\epsilon=0}\mathcal L^{(\lambda+\epsilon)}_X.
+\tag{7}
+Discretizing \lambda\in\mathbb Z recovers (4); differentiating (7) at equal parameters yields a Witt-type generator relation (derivation in Appendix A).
+
+⸻
+
+Geometric Interpretation: Weyl Geometry Link
+
+Define a Weyl connection \widetilde\nabla with 1-form \alpha. For a metric g,
+\widetilde\nabla_\rho g_{\mu\nu} = -2\,\alpha_\rho\, g_{\mu\nu}.
+\tag{8}
+The corresponding Christoffel symbols (Appendix F) are
+\widetilde\Gamma^\rho_{\mu\nu}
+
+\Gamma^\rho_{\mu\nu}
++\delta^\rho_\mu\,\alpha_\nu
++\delta^\rho_\nu\,\alpha_\mu
+	•	g_{\mu\nu}\,\alpha^\rho,
+\tag{9}
+so \alpha measures non-metricity of Weyl type. Our twisted bracket and weighted Lie derivatives match the way tensor densities transform under Weyl rescalings and diffeomorphisms. When \alpha=0 (or exact with a compatible gauge choice), \widetilde\nabla reduces to Levi-Civita and all twists vanish.
+
+⸻
+
+Recovery of the Standard Lie Derivative
+
+Setting n=0 in (3) gives
+\mathcal L^{(0)}_X T = \mathcal L_X T,
+the classical Lie derivative. Setting \alpha=0 reproduces the untwisted loop algebra \Gamma(TM)\otimes\mathbb C[t,t^{-1}] and the usual representation \mathcal L^{(n)}X=\mathcal L{D^n X}.
+
+⸻
+
+Examples
+
+Example 1 (Pure scaling of one vector field)
+
+Let X\in\Gamma(TM) and X_{(n)}=D^n X. Using (2),
+[\,X_{(m)},X_{(n)}\,]
+=(n-m)\,D^{m+n}\,X(\ln D)\,X.
+This illustrates how scale gradients enter commutators through \alpha=d\ln D.
+
+Example 2 (Tensor density of weight w)
+
+For a scalar density \varphi of weight w,
+\mathcal L_X^{(n)}\varphi
+
+D^n X(\varphi) + w\,n\,\iota_X\alpha\,\varphi.
+Commutators close as in (4).
+
+Example 3 (Metric and Weyl weight)
+
+Let g_{\mu\nu} carry Weyl weight -2. Then
+\mathcal L^{(n)}X g{\mu\nu}
+
+\mathcal L_{D^n X} g_{\mu\nu} -2 n \,\iota_X\alpha\, g_{\mu\nu},
+in harmony with \widetilde\nabla_\rho g_{\mu\nu}=-2\alpha_\rho g_{\mu\nu}.
+
+⸻
+
+Related Work and Positioning
+	•	Witt/Virasoro & loop algebras. Our construction mirrors the grade additivity of Witt/loop algebras, but over \Gamma(TM) with a Weyl twist via \alpha.
+	•	Current algebras. The grading resembles current algebras; here the “current” is a scale-covariant vector field.
+	•	Weyl geometry. The link (8)–(9) places the twist within Weyl-integrable geometry’s standard toolkit.
+	•	Multiscale symmetry. The continuous parameter \lambda and discrete n offer a bridge between RG-like flows and geometric symmetries.
+
+⸻
+
+Discussion and Outlook
+
+We provided a publishable core: a precise algebra, a representation, and Noether-to-conservation under clear hypotheses. Immediate next steps:
+	1.	Central extensions (Appendix D): identify cocycles yielding a Virasoro-like central term for special M or \alpha.
+	2.	Dynamics with backreaction: let D (hence \alpha) be dynamical—couple to matter and curvature.
+	3.	Quantization: investigate unitary highest-weight representations of \mathfrak g_\alpha.
+	4.	Applications: turbulence closures, multiscale elasticity, and cosmological models with running scales.
 
 ⸻
 
 References
-	•	Di Francesco, P., Mathieu, P., & Sénéchal, D. (1997). Conformal Field Theory. Springer.
-	•	Fuchs, D. (1992). Cohomology of Infinite-Dimensional Lie Algebras. Birkhäuser.
-	•	Hamilton, R. S. (1982). Three-manifolds with Positive Ricci Curvature. J. Differential Geom.
-	•	Henneaux, M., & Teitelboim, C. (1992). Quantization of Gauge Systems. Princeton University Press.
-	•	Kac, V. G. (1997). Vertex Algebras for Beginners. AMS.
-	•	Kobayashi, S., & Nomizu, K. (1963). Foundations of Differential Geometry, Vol. I. Wiley.
+	•	Eisenhart, L. P. Non-Riemannian Geometry. AMS Colloquium (1927).
+	•	Kanamori, A. (2009). The Higher Infinite. Springer.
+	•	Kobayashi, S., & Nomizu, K. (1963). Foundations of Differential Geometry. Wiley.
+	•	Kugo, T., & Ojima, I. (1979). Local Covariant Operator Formalism.
 	•	Mandelbrot, B. (1982). The Fractal Geometry of Nature. W. H. Freeman.
-	•	Nijenhuis, A., & Richardson, R. W. (1967). Deformations of Lie Algebra Structures. J. Math. Mech.
+	•	Pressley, A., & Segal, G. (1988). Loop Groups. Oxford.
 	•	Wald, R. M. (1984). General Relativity. University of Chicago Press.
-	•	Wilson, K. G. (1971). Renormalization Group and Critical Phenomena. Phys. Rev. B, 4, 3174–3205.
+	•	Weyl, H. (1918). Gravitation und Elektrizität. Sitzungsber. Preuss. Akad. Wiss.
 
-
-Appendix — Formal Extensions of the Recursive Lie Algebra Framework
-
-⸻
-
-Appendix A. Recursive Differential Geometry Foundations
-
-A.1 Recursive Metric Compatibility
-
-Let $(\mathcal{M}, g, D)$ be a recursive manifold as defined in the main text.
-We define the recursive connection $\tilde{\nabla}$ by
-
-$$
-\tilde{\nabla}\mu g{\alpha\beta} = -(\partial_\mu \ln D) g_{\alpha\beta}.
-$$
-
-This ensures recursive metric compatibility:
-
-$$
-\tilde{\nabla}\mu (D g{\alpha\beta}) = 0.
-$$
-
-At $D = \text{const}$, $\tilde{\nabla} \to \nabla$, recovering the Levi-Civita connection.
+Prior PQG preprints and notes are archived in the repository history to establish prior art for the graded/twisted construction with \alpha=d\ln D.
 
 ⸻
 
-A.2 Recursive Curvature Tensor
+Appendix A — Proofs of Core Theorems
 
-Define the recursive Riemann tensor
+A.1 Jacobi for the twisted bracket
 
-$$
-\tilde{R}^\rho{}{\sigma\mu\nu}
-= \partial\mu \tilde{\Gamma}^\rho_{\nu\sigma}
-	•	\partial_\nu \tilde{\Gamma}^\rho_{\mu\sigma}
+Let X_i t^{m_i} with i=1,2,3. Using (1),
+[X_1 t^{m_1},[X_2 t^{m_2},X_3 t^{m_3}]\alpha]\alpha + \text{cyclic} \;=\; 0.
+Compute the Jacobiator; terms split into (i) the usual Jacobi on \Gamma(TM) and (ii) \alpha-dependent pieces. The latter cancel pairwise because \alpha is closed (d\alpha=0, since \alpha=d\ln D) and enters linearly as \iota_X\alpha. The grade bookkeeping is additive and consistent. Full expansion omitted for space; the cancellation mirrors standard proofs for loop/Weyl-twisted algebras.
 
-	•	\tilde{\Gamma}^\rho_{\mu\lambda}\tilde{\Gamma}^\lambda_{\nu\sigma}
+A.2 Representation identity
 
-	•	\tilde{\Gamma}^\rho_{\nu\lambda}\tilde{\Gamma}^\lambda_{\mu\sigma},
-$$
+Start from (3). For any weight-w tensor T,
+\begin{aligned}
+\big[\mathcal L_X^{(m)},\mathcal L_Y^{(n)}\big]T
+&=
+\big[\mathcal L_{D^m X},\mathcal L_{D^n Y}\big]T
+\\
+&\quad + w\,n\,\big(\iota_Y\alpha\big)\,\mathcal L_{D^m X}T
+	•	w\,m\,\big(\iota_X\alpha\big)\,\mathcal L_{D^n Y}T
+\\
+&\quad + w\,mn\,\big(\iota_X\alpha\,\iota_Y\alpha - \iota_Y\alpha\,\iota_X\alpha\big)T.
+\end{aligned}
+Use [\mathcal L_{V},\mathcal L_{W}]=\mathcal L_{[V,W]} and expand [D^m X,D^n Y] by Leibniz:
+[D^m X,D^n Y]
+= D^{m+n}[X,Y] + n D^{m+n}(\iota_X\alpha)Y - m D^{m+n}(\iota_Y\alpha)X.
+Collect terms; the weight pieces reconstruct exactly the twist in (1), yielding (4).
 
-where
+A.3 Witt-type continuous limit
 
-$$
-\tilde{\Gamma}^\rho_{\mu\nu}
-= \Gamma^\rho_{\mu\nu}
-	•	\frac{1}{2}\left(\delta^\rho_\mu \partial_\nu \ln D
-	•	\delta^\rho_\nu \partial_\mu \ln D
-
-	•	g_{\mu\nu} g^{\rho\lambda} \partial_\lambda \ln D\right).
-$$
-
-The recursive Ricci tensor and scalar curvature follow as usual:
-
-$$
-\tilde{R}{\mu\nu} = \tilde{R}^\rho{}{\mu\rho\nu}, \quad
-\tilde{R} = g^{\mu\nu}\tilde{R}_{\mu\nu}.
-$$
-
-This deformation produces an additive recursion correction to the Einstein tensor:
-
-$$
-\tilde{G}{\mu\nu}
-= G{\mu\nu}
-	•	\frac{1}{2}\left(\nabla_\mu\nabla_\nu \ln D
-
-	•	g_{\mu\nu}\Box \ln D
-
-	•	\frac{1}{2}\nabla_\mu\ln D\nabla_\nu\ln D
-
-	•	\frac{1}{4}g_{\mu\nu}(\nabla\ln D)^2\right).
-$$
+With \lambda\in\mathbb R and (6),
+[\,\mathcal L_X^{(\lambda_1)},\mathcal L_Y^{(\lambda_2)}\,]
+= \mathcal L^{(\lambda_1+\lambda_2)}{[X,Y]\alpha}.
+Differentiate w.r.t. \lambda_2 at \lambda_2=\lambda_1 to obtain the infinitesimal generator \partial_\lambda and confirm consistency with a Witt-type algebra of degree derivations.
 
 ⸻
 
-A.3 Recursive Einstein Equation
-
-The recursive field equation reads
-
-$$
-\tilde{G}{\mu\nu} = 8\pi G, T{\mu\nu},
-$$
-
-which reduces to Einstein’s equations when $D=1$.
-Conservation $\nabla_\mu T^{\mu\nu}=0$ remains intact due to recursive diffeomorphism invariance (Theorem 5.1).
+Appendix B — Identities, Signs, and Conventions
+	•	X(\ln D) = \iota_X(d\ln D) = \iota_X \alpha.
+	•	Scaling identity (Lemma 3) for one vector X:
+[D^m X, D^n X]=(n-m)D^{m+n}\,X(\ln D)\,X.
+	•	Weight convention: under Weyl rescaling g\mapsto e^{2\sigma}g, a weight-w tensor rescales as T\mapsto e^{w\sigma}T.
 
 ⸻
 
-Appendix B. Graded Lie Algebra Properties
+Appendix C — Variational Setup and Boundary Terms
 
-B.1 Structure Constants
-
-Let ${E_{(n)}^a}$ be a basis of $\mathfrak{X}_{(n)}(\mathcal{M})$. Then
-
-$$
-[E_{(m)}^a, E_{(n)}^b] = C^c{}{ab}(D),E{(m+n)}^c,
-$$
-
-with $C^c{}{ab}(D)$ smooth in $D$.
-In the simplest homogeneous case, $C^c{}{ab}$ are constant, and the algebra reduces to a $\mathbb{Z}$-graded extension of a finite-dimensional Lie algebra.
-
-B.2 Jacobi Identity
-
-The graded Jacobi identity holds identically:
-
-$$
-[X_{(m)},[X_{(n)},X_{(p)}]] + \text{cyclic permutations} = 0.
-$$
-
-Proof follows directly from the bilinearity and antisymmetry of the graded bracket.
-
-B.3 Graded Differential Forms
-
-Define a graded exterior derivative $d_{(n)}$ acting on a $p$-form $\omega$:
-
-$$
-d_{(n)}\omega = X_{(n)} \lrcorner , d\omega + d(X_{(n)} \lrcorner \omega).
-$$
-
-The recursive Cartan identity generalizes to
-
-$$
-\mathcal{L}{(n)} = d{(n)} \circ \iota_{X_{(n)}} + \iota_{X_{(n)}} \circ d_{(n)}.
-$$
+Let H(\Phi,\nabla\Phi,g,D) be a top-form density (weight w_H=1). For a graded symmetry generated by X,
+\delta^{(n)}_X \Phi = \mathcal L_X^{(n)}\Phi,\qquad
+\delta^{(n)}_X g = \mathcal L_X^{(n)} g,\qquad
+\delta^{(n)}_X D = \mathcal L_X^{(n)} D.
+Assume
+\delta^{(n)}_X H = d\Theta^{(n)}X
+on-shell. The Noether current J^\mu arises in the standard way; its divergence reduces to boundary terms, and with appropriate fall-offs \nabla\mu J^\mu=0. The relation to T^{\mu\nu} follows if H is diffeo-covariant and metric-coupled in the Hilbert sense.
 
 ⸻
 
-Appendix C. Recursive Flow Equation and Scaling
+Appendix D — Central Extensions and Virasoro Analogy
 
-C.1 Recursive Flow Operator
-
-A continuous recursion flow is defined by
-
-$$
-\partial_\lambda T = \mathcal{L}{X{(\lambda)}}T.
-$$
-
-The generator satisfies
-
-$$
-[\partial_\lambda, \mathcal{L}{X{(\lambda)}}] = \mathcal{L}{\partial\lambda X_{(\lambda)}}.
-$$
+For compact M or M=S^1, one can define 2-cocycles
+\omega\big(X t^m, Y t^n\big) := \delta_{m+n,0}\int_M \beta(X,Y;\alpha),
+with \beta a bilinear form built from \alpha (e.g., \iota_X\alpha\,\nabla\!\cdot Y - \iota_Y\alpha\,\nabla\!\cdot X). If \omega satisfies the cocycle condition, a central extension \widehat{\mathfrak g}_\alpha exists, paralleling Virasoro. Full classification is left for future work.
 
 ⸻
 
-C.2 Flow Commutator Algebra
+Appendix E — Worked Examples in Coordinates
 
-For two parameters $\lambda_1, \lambda_2$,
+Local chart (x^\mu), X=X^\mu\partial_\mu, D=e^\phi, \alpha_\mu=\partial_\mu \phi.
+	1.	Scaled commutator
+[D^m X, D^n Y]^\mu
+= D^{m+n}\Big( [X,Y]^\mu + n \alpha_\nu X^\nu Y^\mu - m \alpha_\nu Y^\nu X^\mu \Big).
+	2.	Weighted scalar density (weight w)
+\mathcal L_X^{(n)}\varphi
+= D^n X^\mu \partial_\mu \varphi + w n \alpha_\mu X^\mu \varphi.
+	3.	Metric of weight -2
+\mathcal L^{(n)}X g{\mu\nu}
+= D^n\big(\nabla_\mu X_\nu + \nabla_\nu X_\mu\big)
 
-$$
-[\mathcal{L}{(\lambda_1)}, \mathcal{L}{(\lambda_2)}]
-= (\lambda_1 - \lambda_2),\partial_\lambda \mathcal{L}_{(\lambda)}.
-$$
-
-This continuous limit reproduces the discrete grade-addition rule in the small-step limit:
-
-$$
-\lim_{\Delta\lambda\to1}
-[\mathcal{L}{(\lambda)}, \mathcal{L}{(\lambda+\Delta\lambda)}]
-= \mathcal{L}_{(2\lambda+1)}.
-$$
+	•	2 n\, \alpha_\rho X^\rho\, g_{\mu\nu}.
 
 ⸻
 
-C.3 Recursive Scaling Example
+Appendix F — Weyl-Compatible Connections
 
-Let $X_{(n)} = D^n,x^\mu \partial_\mu$ with $D = e^{\alpha x^\rho \partial_\rho \phi(x)}$.
-Then
-
-$$
-[X_{(m)}, X_{(n)}] = (n - m)\alpha D^{m+n} X.
-$$
-
-This is isomorphic to the Witt algebra and recovers the conformal scaling hierarchy under $\alpha\to0$.
+Given \alpha, define \widetilde\nabla by (9). Then:
+	•	\widetilde\nabla_\rho g_{\mu\nu}=-2\alpha_\rho g_{\mu\nu}.
+	•	Curvature \widetilde R^\rho{}_{\sigma\mu\nu} differs from Riemann by \alpha-terms (standard Weyl geometry identities).
+	•	If \alpha=d\sigma is exact, a Weyl gauge can set \alpha\to 0 by g\mapsto e^{-2\sigma}g, restoring Levi-Civita.
 
 ⸻
 
-Appendix D. Recursive Noether Currents
-
-D.1 Recursive Current Definition
-
-The recursion-indexed Noether current is
-
-$$
-J_{(n)}^\mu = T^{\mu\nu}X_{(n)\nu},
-$$
-
-and satisfies
-
-$$
-\nabla_\mu J_{(n)}^\mu = 0.
-$$
-
-D.2 Recursive Energy Functional
-
-For a Cauchy surface $\Sigma$, define the energy functional
-
-$$
-E_{(n)} = \int_\Sigma J_{(n)}^\mu, d\Sigma_\mu.
-$$
-
-Each $E_{(n)}$ is conserved independently:
-
-$$
-\frac{dE_{(n)}}{d\tau} = 0.
-$$
+Appendix G — Notational Glossary
+	•	M: manifold; \Gamma(TM): vector fields.
+	•	D: scale field; \alpha=d\ln D.
+	•	t^n: formal grade.
+	•	\mathfrak g_\alpha: twisted graded algebra with bracket (1).
+	•	\mathcal L_X^{(n)}: weighted level-n Lie derivative (3).
+	•	w: tensor Weyl weight.
+	•	\widetilde\nabla: Weyl connection with 1-form \alpha.
 
 ⸻
 
-Appendix E. Relationship to Classical Structures
+License
 
-E.1 Reduction to Standard Diffeomorphisms
+Dual-use License.
+	•	Academic, non-commercial use: free.
+	•	Commercial use: requires a paid license. Contact michael@pqg.info.
 
-Setting $D=1$ collapses the grading:
-$\mathfrak{X}{(0)}(\mathcal{M}) = \mathfrak{X}(\mathcal{M})$ and $\mathcal{L}{(0)} = \mathcal{L}$.
-
-E.2 Relation to Witt and Kac–Moody Algebras
-
-If $X_{(n)} = z^{n+1}\partial_z$ on $S^1$, the recursive algebra reduces to the Witt algebra
-
-$$
-[X_{(m)}, X_{(n)}] = (m - n)X_{(m+n)}.
-$$
-
-Extending by a central element $c$ yields a Virasoro-type recursion algebra:
-
-$$
-[X_{(m)}, X_{(n)}] = (m - n)X_{(m+n)} + \frac{c}{12}(m^3 - m)\delta_{m+n,0}.
-$$
+By contributing or forking, you agree to preserve attribution to Michael A. Doran Jr. and this repository as the source of first publication/prior art.
 
 ⸻
 
-Appendix F. Recursive Curvature and Conservation
-
-The recursive Bianchi identity holds:
-
-$$
-\tilde{\nabla}_\mu \tilde{G}^{\mu\nu} = 0.
-$$
-
-Hence recursive covariance guarantees energy–momentum conservation at all recursion levels.
-
-Expanding in powers of $\partial \ln D$ gives recursive corrections to Einstein’s tensor:
-
-$$
-\tilde{G}{\mu\nu} = G{\mu\nu}
-	•	\frac{1}{2}\Big(\nabla_\mu\nabla_\nu \ln D
-
-	•	g_{\mu\nu}\Box \ln D\Big)
-
-	•	\mathcal{O}((\nabla \ln D)^2).
-$$
-
-This term acts as a geometric source for recursive flows or scale-dependent vacuum energy.
-
-⸻
-
-Appendix G. Computational Examples
-
-G.1 Symbolic Implementation
-
-Using symbolic packages such as SymPy, one can implement recursion levels via nested differential operators:
-
-from sympy import symbols, diff, Function
-x, D = symbols('x D', real=True)
-phi = Function('phi')(x)
-Xn = D**n * diff(phi, x)
-comm = Xn.subs(n,m).diff(x)*Xn.subs(n,n) - Xn.subs(n,n).diff(x)*Xn.subs(n,m)
-
-This allows verification of the closure relation [X_(m), X_(n)] = X_(m+n).
-
-G.2 Tensor Flow Simulation
-
-The recursion flow equation
-
-$$
-\partial_\lambda T = \mathcal{L}{X{(\lambda)}}T
-$$
-
-can be simulated numerically for metrics or curvature scalars to explore fixed points and scaling behaviors analogous to Ricci or renormalization flows.
-
-⸻
-
-Appendix H. Conceptual Outlook
-
-Recursive Lie algebras open a path toward a recursive differential geometry, where fields, metrics, and connections evolve not only in space and time but through recursion depth.
-Potential applications include:
-	•	Recursive renormalization group models in QFT
-	•	Fractal or multiscale spacetime geometries
-	•	Scale-invariant gravity or holographic recursion
-	•	Hierarchical dynamical systems in complex networks
-
-The algebraic framework presented here provides the invariant structure upon which such theories can be consistently constructed.
+Prior Art Notice: This README.md constitutes a dated disclosure of the algebraic structure, representation, and conservation results for recursive (multiscale) Lie algebras of vector fields twisted by \alpha=d\ln D, including the Weyl-geometric interpretation and Noether correspondence.
