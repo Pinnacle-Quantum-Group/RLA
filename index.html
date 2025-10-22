@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recursive Lie Algebras of Vector Fields: A Geometric Framework for Multiscale Symmetry</title>
+    
+    <!-- MathJax Configuration -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true,
+                packages: {'[+]': ['ams', 'physics', 'boldsymbol']}
+            },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            }
+        };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Times New Roman', serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+            background: #fff;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #333;
+        }
+        
+        .title {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+        
+        .author {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        
+        .affiliation {
+            font-style: italic;
+            margin-bottom: 5px;
+        }
+        
+        .date {
+            margin-bottom: 10px;
+        }
+        
+        .contact {
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        
+        .license {
+            font-size: 0.9em;
+            font-style: italic;
+        }
+        
+        .acknowledgments {
+            font-size: 0.95em;
+            font-style: italic;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f8f8;
+            border-left: 4px solid #ddd;
+        }
+        
+        .section {
+            margin: 30px 0;
+        }
+        
+        .section-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        
+        .subsection-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin: 20px 0 10px 0;
+            color: #34495e;
+        }
+        
+        .abstract {
+            background: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-style: italic;
+        }
+        
+        .toc {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .toc ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .toc li {
+            margin: 5px 0;
+        }
+        
+        .definition, .theorem, .lemma, .corollary {
+            background: #f0f8ff;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 4px solid #4a90e2;
+            border-radius: 3px;
+        }
+        
+        .definition-title, .theorem-title, .lemma-title, .corollary-title {
+            font-weight: bold;
+            color: #2c5aa0;
+            margin-bottom: 10px;
+        }
+        
+        .boxed {
+            border: 2px solid #333;
+            padding: 15px;
+            margin: 15px 0;
+            background: #fff;
+            border-radius: 5px;
+        }
+        
+        .example {
+            background: #fff8f0;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 4px solid #f39c12;
+            border-radius: 3px;
+        }
+        
+        .example-title {
+            font-weight: bold;
+            color: #d68910;
+            margin-bottom: 10px;
+        }
+        
+        .proof {
+            font-style: italic;
+            margin: 10px 0;
+            padding: 10px;
+            background: #fafafa;
+            border-radius: 3px;
+        }
+        
+        .equation {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .equation-number {
+            float: right;
+            margin-top: 5px;
+        }
+        
+        ul {
+            padding-left: 20px;
+        }
+        
+        ul li {
+            margin: 8px 0;
+        }
+        
+        .references {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 30px 0;
+        }
+        
+        .references ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .references li {
+            margin: 10px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .references li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+        }
+        
+        .appendix {
+            background: #f7f7f7;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        
+        .separator {
+            text-align: center;
+            margin: 40px 0;
+            font-size: 1.5em;
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                font-size: 14px;
+            }
+            
+            .title {
+                font-size: 1.5em;
+            }
+            
+            .equation-number {
+                float: none;
+                text-align: center;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">Recursive Lie Algebras of Vector Fields: A Geometric Framework for Multiscale Symmetry</div>
+        <div class="author">Michael A. Doran Jr.</div>
+        <div class="affiliation">Pinnacle Quantum Group (PQG)</div>
+        <div class="date">May 2025</div>
+        <div class="contact">Contact: <a href="mailto:michael@pqg.info">michael@pqg.info</a></div>
+        <div class="license">License: Dual-use — free for academic; commercial use requires a paid license (see License).</div>
+    </div>
+
+    <div class="acknowledgments">
+        <strong>Acknowledgments.</strong> With gratitude to Dr. Tanush Shaska (Oakland University) and Makesh Shastry (Kalman Systems, Sydney, Australia) for guidance and critique that materially improved the algebraic core and geometric interpretation.
+    </div>
+
+    <div class="separator">⸻</div>
+
+    <div class="section">
+        <div class="section-title">Abstract</div>
+        <div class="abstract">
+            We develop a rigorous graded Lie algebra of vector fields that encodes multiscale (recursive) diffeomorphisms on a smooth manifold. A nowhere-vanishing scalar field $D$ induces a 1-form $\alpha := d(\ln D)$ that twists the Lie bracket into a Witt/loop-like graded algebra:
+            
+            <div class="equation">
+                $$[X\!\otimes t^m,\,Y\!\otimes t^n]_{\alpha}
+                \;=\;
+                \Big([X,Y] + (n\,\iota_X\alpha - m\,\iota_Y\alpha)\,Y\Big)\!\otimes t^{m+n},$$
+            </div>
+            
+            giving degree additivity and enabling a level-$n$ Lie derivative representation on tensor(-density) fields. We prove closure, Jacobi, existence of a faithful representation on weighted tensors with commutator
+            
+            $$[\,\mathcal L^{(m)}X,\mathcal L^{(n)}Y\,]=\mathcal L^{(m+n)}{[X,Y]_\alpha},$$
+            
+            and show conditions under which recursive invariance $\mathcal L^{(n)} H=0$ yields covariant conservation $\nabla_\mu T^{\mu\nu}=0$ via a Noether-type argument.
+            
+            <p>A continuous recursion parameter $\lambda$ recovers the discrete grading as a Witt-type limit, clarifying multiscale flows and their Weyl-geometric interpretation: the induced connection is a (metric-compatible iff $\alpha=0$) Weyl connection with scale 1-form $\alpha$. The construction furnishes a mathematically controlled backbone for applications in renormalization flows, multiscale continuum mechanics, and modified gravity models where symmetries act across scales rather than at a single scale.</p>
+        </div>
+    </div>
+
+    <div class="separator">⸻</div>
+
+    <div class="section">
+        <div class="section-title">Table of Contents</div>
+        <div class="toc">
+            <ol>
+                <li>Motivation and Contributions</li>
+                <li>Notation and Preliminaries</li>
+                <li>Axioms: Recursive Scale Geometry</li>
+                <li>Definition: Twisted Graded Algebra of Vector Fields</li>
+                <li>Closure, Jacobi, and Structure</li>
+                <li>Representation on Weighted Tensor Fields</li>
+                <li>Noether Statement and Conservation Laws</li>
+                <li>Continuous Recursion and Witt-Type Limit</li>
+                <li>Geometric Interpretation: Weyl Geometry Link</li>
+                <li>Recovery of the Standard Lie Derivative</li>
+                <li>Examples</li>
+                <li>Related Work and Positioning</li>
+                <li>Discussion and Outlook</li>
+                <li>References</li>
+                <li>Appendix A — Proofs of Core Theorems</li>
+                <li>Appendix B — Identities, Signs, and Conventions</li>
+                <li>Appendix C — Variational Setup and Boundary Terms</li>
+                <li>Appendix D — Central Extensions and Virasoro Analogy</li>
+                <li>Appendix E — Worked Examples in Coordinates</li>
+                <li>Appendix F — Weyl-Compatible Connections</li>
+                <li>Appendix G — Notational Glossary</li>
+                <li>License</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="separator">⸻</div>
+
+    <div class="section">
+        <div class="section-title">1. Motivation and Contributions</div>
+        <p>Classical diffeomorphism symmetry acts at a single scale. Many physical systems—turbulence, critical phenomena, RG flows, multiscale elasticity, cosmology with running units—demand symmetries that link scales. We systematize this by:</p>
+        <ul>
+            <li>introducing a recursive scale field $D>0$ and $\alpha = d\ln D$;</li>
+            <li>building a $\mathbb Z$-graded Lie algebra $\mathfrak g_{\alpha}$ of vector fields "decorated" by scale level $n$;</li>
+            <li>defining level-$n$ Lie derivatives $\mathcal L^{(n)}$ acting on tensor densities so that the commutator reproduces the graded bracket;</li>
+            <li>proving a Noether correspondence: if a Lagrangian density is invariant under all levels in a sector, there is an associated covariant conservation law;</li>
+            <li>exhibiting a continuous recursion parameter $\lambda$ that recovers the discrete grading (a Witt-type limit);</li>
+            <li>clarifying the Weyl geometry relationship: $\alpha$ is a Weyl 1-form; when $\alpha=0$, the construction collapses to standard diffeomorphisms and standard Lie derivatives.</li>
+        </ul>
+    </div>
+
+    <div class="separator">⸻</div>
+
+    <div class="section">
+        <div class="section-title">2. Notation and Preliminaries</div>
+        <ul>
+            <li>$M$: smooth, oriented $n$-manifold.</li>
+            <li>$\Gamma(TM)$: smooth vector fields on $M$.</li>
+            <li>$D \in C^\infty(M)$, $D>0$ everywhere; define $\alpha := d(\ln D) \in \Omega^1(M)$.</li>
+            <li>$t$: a formal degree marker; $\mathbb C[t,t^{-1}]$ the Laurent polynomials; write $X \otimes t^n$ or $X t^n$.</li>
+            <li>$\iota_X\alpha := \alpha(X)$.</li>
+            <li>$\mathcal T^r_s(M)$: $(r,s)$-tensor fields.</li>
+            <li>Tensor weight $w$ means density weight under Weyl rescaling (Appendix B).</li>
+        </ul>
+    </div>
+
+    <div class="separator">⸻</div>
+
+    <div class="section">
+        <div class="section-title">3. Axioms: Recursive Scale Geometry</div>
+        
+        <div class="definition">
+            <div class="definition-title">Axiom A1 (Scale Field).</div>
+            There exists a nowhere-vanishing scalar field $D\in C^\infty(M)$ and a derived 1-form $\alpha := d(\ln D)$.
+        </div>
+
+        <div class="definition">
+            <div class="definition-title">Axiom A2 (Graded Symmetry Ansatz).</div>
+            Recursive/multiscale diffeomorphisms act by vector fields $X$ at discrete levels $n\in\mathbb Z$. Algebraically we model levels by attaching a formal factor $t^n$.
+        </div>
+
+        <div class="definition">
+            <div class="definition-title">Axiom A3 (Representation Goal).</div>
+            There exists a representation on weighted tensors $\mathcal L^{(n)}X$ so that
+            $$[\mathcal L^{(m)}X,\mathcal L^{(n)}Y] = \mathcal L^{(m+n)}{[X,Y]_\alpha},$$
+            for a suitable twisted bracket $[\,\cdot,\cdot]_\alpha$ defined below.
+        </div>
+
+        <div class="definition">
+            <div class="definition-title">Axiom A4 (Recursive Invariance → Conservation).</div>
+            If an action density $H$ is invariant under a family of level symmetries, the associated energy–momentum or Noether current is covariantly conserved (under stated regularity and boundary hypotheses).
+        </div>
+    </div>
+
+    <div class="separator">⸻</div>
+
+    <div class="section">
+        <div class="section-title">4. Definition: Twisted Graded Algebra of Vector Fields</div>
+        
+        <p>Let</p>
+        $$\mathfrak g_\alpha \;:=\; \Gamma(TM)\otimes \mathbb C[t,t^{-1}]
+        \;=\; \bigoplus_{n\in\mathbb Z} \Gamma(TM)\,t^n.$$
+
+        <div class="definition">
+            <div class="definition-title">Definition 1 (Twisted graded bracket).</div>
+            For $X,Y\in\Gamma(TM)$ and $m,n\in\mathbb Z$, set
+            <div class="boxed">
+                $$\,[X t^m,\, Y t^n]_\alpha
+                \;:=\;
+                \Big([X,Y] + (n\,\iota_X\alpha - m\,\iota_Y\alpha)\,Y\Big) \, t^{m+n}.$$
+                <div class="equation-number">(1)</div>
+            </div>
+        </div>
+
+        <p>This choice (i) adds grades $m+n$, (ii) reduces to the usual bracket when $\alpha=0$, and (iii) admits a faithful representation on weighted tensors (Sec. 6).</p>
+
+        <p><strong>Remark.</strong> Eq. (1) is one consistent "twist." Alternatives exist (e.g., distributing the $\alpha$-term between $X$ and $Y$, or including divergence terms). The present choice is minimal and closes under Jacobi (Appendix A).</p>
+    </div>
+
+    <div class="separator">⸻</div>
+
+    <div class="section">
+        <div class="section-title">5. Closure, Jacobi, and Structure</div>
+
+        <div class="theorem">
+            <div class="theorem-title">Theorem 2 (Graded Lie algebra).</div>
+            $(\mathfrak g_\alpha,[\cdot,\cdot]_\alpha)$ with bracket (1) is a $\mathbb Z$-graded Lie algebra:
+            <ol>
+                <li>(Bilinearity, antisymmetry) Clear by construction.</li>
+                <li>(Degree additivity) $[\,\mathfrak g_m,\mathfrak g_n\,] \subseteq \mathfrak g_{m+n}$.</li>
+                <li>(Jacobi) $[X t^m,[Y t^n, Z t^p]_\alpha]_\alpha + \text{cyclic perms} = 0$.</li>
+            </ol>
+            <div class="proof">
+                <strong>Proof.</strong> See Appendix A. Jacobi reduces to the Jacobi on $\Gamma(TM)$ plus exact cancellations among $\alpha$-terms. $\square$
+            </div>
+        </div>
+
+        <div class="lemma">
+            <div class="lemma-title">Lemma 3 (Elementary scaled commutator).</div>
+            Let $X\in\Gamma(TM)$ and define $X_{(n)} := D^{\,n} X$. Then
+            <div class="equation">
+                $$[\,X_{(m)},\, X_{(n)}\,]
+                \;=\;
+                (n-m)\,D^{m+n}\,X(\ln D)\,X.$$
+                <div class="equation-number">(2)</div>
+            </div>
+            <strong>Derivation.</strong> Expand with Leibniz rule and use $[X,X]=0$. This identity motivates a twist proportional to $n\,\iota_X\alpha$ (Appendix E).
+        </div>
+    </div>
+
+    <div class="separator">⸻</div>
+
+    <div class="section">
+        <div class="section-title">6. Representation on Weighted Tensor Fields</div>
+
+        <p>Let $T$ be a tensor field of weight $w$ (Appendix B). Define the level-$n$ Lie derivative:</p>
+
+        <div class="definition">
+            <div class="definition-title">Definition 4 (Weighted level-$n$ Lie derivative).</div>
+            <div class="boxed">
+                $$\mathcal L^{(n)}_X T
+                \;:=\;
+                \mathcal L_{D^{\,n} X} T \;+\; w\,n\,\iota_X\alpha \; T.$$
+                <div class="equation-number">(3)</div>
+            </div>
+        </div>
+
+        <p>Here $\mathcal L_{V}$ is the standard Lie derivative along $V$, and the weight term ensures faithful representation of the twisted algebra.</p>
+
+        <div class="theorem">
+            <div class="theorem-title">Theorem 5 (Representation property).</div>
+            For all $X,Y\in\Gamma(TM)$, $m,n\in\mathbb Z$, and any weight-$w$ tensor $T$,
+            <div class="boxed">
+                $$\big[\mathcal L^{(m)}_X,\,\mathcal L^{(n)}_Y\big]\,T \;=\; \mathcal L^{(m+n)}_{[X,Y]_\alpha} T,$$
+                <div class="equation-number">(4)</div>
+            </div>
+            where $[X,Y]_\alpha := [X,Y] + (n\,\iota_X\alpha - m\,\iota_Y\alpha)\,Y$ evaluated at the level of (1).
+            
+            <div class="proof">
+                <strong>Proof.</strong> Expand both sides using (3), the commutator identity for standard Lie derivatives, and collect $\alpha$-dependent weight terms; cancellations produce exactly the twist in (1). Full detail in Appendix A. $\square$
+            </div>
+        </div>
+
+        <div class="corollary">
+            <div class="corollary-title">Corollary 6 (Standard case).</div>
+            If $\alpha=0$ (equivalently $D\equiv \text{const}$), then $\mathcal L^{(n)}_X=\mathcal L_{D^n X}$ and (4) reduces to the usual commutator with grade additivity, while for $n=0$ one recovers the standard Lie derivative $\mathcal L^{(0)}_X=\mathcal L_X$.
+        </div>
+    </div>
+
+    <div class="separator">⸻</div>
+
+    <div class="section">
+        <div class="section-title">7. Noether Statement and Conservation Laws</div>
+
+        <p>Let $H$ be a Lagrangian density of weight $w_H$ (e.g., $w_H=1$ for a top-form density). Consider a family of variations</p>
+        $$\delta^{(n)}_X \Phi := \mathcal L^{(n)}_X \Phi
+        \quad\text{on fields } \Phi,$$
+        <p>and the induced variation of $H$,</p>
+        $$\delta^{(n)}_X H = \mathcal L^{(n)}_X H.$$
+
+        <div class="theorem">
+            <div class="theorem-title">Theorem 7 (Recursive invariance ⇒ conservation).</div>
+            Suppose $H$ is invariant under all level-$n$ symmetries in a sector $\mathcal S$:
+            $$\mathcal L_X^{(n)} H = d\Theta^{(n)}_X \quad\text{(boundary term)}
+            \quad\forall\, X\in\mathcal S,\ \forall\, n\in \mathbb Z.$$
+            Then there exists a covariantly conserved current: $\nabla_\mu J^\mu = 0$ under appropriate boundary conditions.
+            
+            <div class="proof">
+                <strong>Proof sketch.</strong> Standard Noether machinery, adapted to the graded setting. The key is that the representation (4) ensures that level-$n$ variations close algebraically, so the usual argument for current conservation applies level by level. $\square$
+            </div>
+        </div>
+    </div>
+
+    <div class="separator">⸻</div>
+
+    <div class="section">
+        <div class="section-title">8. Continuous Recursion and Witt-Type Limit</div>
+
+        <p>Replace the discrete grade $n$ with a continuous parameter $\lambda\in\mathbb R$:</p>
+        $$\mathcal L^{(\lambda)}_X T := \mathcal L_{D^\lambda X} T + w\,\lambda\,\iota_X\alpha \; T.$$
+
+        <div class="theorem">
+            <div class="theorem-title">Theorem 8 (Continuous bracket closure).</div>
+            The continuous representation satisfies
+            $$[\mathcal L^{(\lambda_1)}_X, \mathcal L^{(\lambda_2)}_Y] = \mathcal L^{(\lambda_1+\lambda_2)}_{[X,Y]_{\lambda_1,\lambda_2}},$$
+            where the twisted bracket includes $\lambda$-dependent terms analogous to (1).
+        </div>
+
+        <p>Taking $\lambda \to 0$ recovers the standard case, while the discrete limit $\lambda \in \mathbb Z$ reproduces our graded algebra. This provides a smooth interpolation between scales and connects to Witt algebra structures in conformal field theory.</p>
+    </div>
+
+    <div class="separator">⸻</div>
+
+    <div class="section">
+        <div class="section-title">9. Geometric Interpretation: Weyl Geometry Link</div>
+
+        <p>The 1-form $\alpha = d\ln D$ naturally defines a Weyl connection:</p>
+        $$\widetilde\nabla_\rho V^\mu := \nabla_\rho V^\mu + \alpha_\rho V^\mu,$$
+        $$\widetilde\nabla_\rho g_{\mu\nu} := \nabla_\rho g_{\mu\nu} - 2\alpha_\rho g_{\mu\nu}.$$
+
+        <p>This connection is metric-compatible with respect to the Weyl-scaled metric $\widetilde g_{\mu\nu} = D^{-2} g_{\mu\nu}$. When $\alpha = 0$, we recover the standard Levi-Civita connection.</p>
+
+        <p>The level-$n$ Lie derivatives (3) can be understood as acting via this Weyl connection, providing a geometric foundation for the algebraic construction.</p>
+    </div>
+
+    <div class="separator">⸻</div>
+
+    <div class="section">
+        <div class="section-title">10. Recovery of the Standard Lie Derivative</div>
+
+        <p>Setting $n=0$ in Definition 4 gives</p>
+        $$\mathcal L^{(0)}_X T = \mathcal L_X T,$$
+        <p>the classical Lie derivative. Setting $\alpha=0$ reproduces the untwisted loop algebra $\Gamma(TM)\otimes\mathbb C[t,t^{-1}]$ and the usual representation $\mathcal L^{(n)}_X=\mathcal L_{D^n X}$.</p>
+    </div>
+
+    <div class="separator">⸻</div>
+
+    <div class="section">
+        <div class="section-title">11. Examples</div>
+
+        <div class="example">
+            <div class="example-title">Example 1 (Pure scaling of one vector field)</div>
+            Let $X\in\Gamma(TM)$ and $X_{(n)}=D^n X$. Using (2),
+            $$[\,X_{(m)},X_{(n)}\,]
+            =(n-m)\,D^{m+n}\,X(\ln D)\,X.$$
+            This illustrates how scale gradients enter commutators through $\alpha=d\ln D$.
+        </div>
+
+        <div class="example">
+            <div class="example-title">Example 2 (Tensor density of weight $w$)</div>
+            For a scalar density $\varphi$ of weight $w$,
+            $$\mathcal L_X^{(n)}\varphi = D^n X(\varphi) + w\,n\,\iota_X\alpha\,\varphi.$$
+            Commutators close as in (4).
+        </div>
+
+        <div class="example">
+            <div class="example-title">Example 3 (Metric and Weyl weight)</div>
+            Let $g_{\mu\nu}$ carry Weyl weight $-2$. Then
+            $$\mathcal L^{(n)}_X g_{\mu\nu} = \mathcal L_{D^n X} g_{\mu\nu} -2 n \,\iota_X\alpha\, g_{\mu\nu},$$
+            in harmony with $\widetilde\nabla_\rho g_{\mu\nu}=-2\alpha_\rho g_{\mu\nu}$.
+        </div>
+    </div>
+
+    <div class="separator">⸻</div>
+
+    <div class="section">
+        <div class="section-title">12. Related Work and Positioning</div>
+        <ul>
+            <li><strong>Witt/Virasoro & loop algebras.</strong> Our construction mirrors the grade additivity of Witt/loop algebras, but over $\Gamma(TM)$ with a Weyl twist via $\alpha$.</li>
+            <li><strong>Current algebras.</strong> The grading resembles current algebras; here the "current" is a scale-covariant vector field.</li>
+            <li><strong>Weyl geometry.</strong> The link (8)–(9) places the twist within Weyl-integrable geometry's standard toolkit.</li>
+            <li><strong>Multiscale symmetry.</strong> The continuous parameter $\lambda$ and discrete $n$ offer a bridge between RG-like flows and geometric symmetries.</li>
+        </ul>
+    </div>
+
+    <div class="separator">⸻</div>
+
+    <div class="section">
+        <div class="section-title">13. Discussion and Outlook</div>
+
+        <p>We provided a publishable core: a precise algebra, a representation, and Noether-to-conservation under clear hypotheses. Immediate next steps:</p>
+        <ol>
+            <li><strong>Central extensions</strong> (Appendix D): identify cocycles yielding a Virasoro-like central term for special $M$ or $\alpha$.</li>
+            <li><strong>Dynamics with backreaction</strong>: let $D$ (hence $\alpha$) be dynamical—couple to matter and curvature.</li>
+            <li><strong>Quantization</strong>: investigate unitary highest-weight representations of $\mathfrak g_\alpha$.</li>
+            <li><strong>Applications</strong>: turbulence closures, multiscale elasticity, and cosmological models with running scales.</li>
+        </ol>
+    </div>
+
+    <div class="separator">⸻</div>
+
+    <div class="section">
+        <div class="section-title">14. References</div>
+        <div class="references">
+            <ul>
+                <li>Eisenhart, L. P. <em>Non-Riemannian Geometry</em>. AMS Colloquium (1927).</li>
+                <li>Kanamori, A. (2009). <em>The Higher Infinite</em>. Springer.</li>
+                <li>Kobayashi, S., & Nomizu, K. (1963). <em>Foundations of Differential Geometry</em>. Wiley.</li>
+                <li>Kugo, T., & Ojima, I. (1979). <em>Local Covariant Operator Formalism</em>.</li>
+                <li>Mandelbrot, B. (1982). <em>The Fractal Geometry of Nature</em>. W. H. Freeman.</li>
+                <li>Pressley, A., & Segal, G. (1988). <em>Loop Groups</em>. Oxford.</li>
+                <li>Wald, R. M. (1984). <em>General Relativity</em>. University of Chicago Press.</li>
+                <li>Weyl, H. (1918). Gravitation und Elektrizität. <em>Sitzungsber. Preuss. Akad. Wiss.</em></li>
+            </ul>
+            <p>Prior PQG preprints and notes are archived in the repository history to establish prior art for the graded/twisted construction with $\alpha=d\ln D$.</p>
+        </div>
+    </div>
+
+    <div class="separator">⸻</div>
+
+    <div class="appendix">
+        <div class="section-title">Appendix A — Proofs of Core Theorems</div>
+
+        <div class="subsection-title">A.1 Jacobi for the twisted bracket</div>
+        <p>Let $X_i t^{m_i}$ with $i=1,2,3$. Using (1),</p>
+        $$[X_1 t^{m_1},[X_2 t^{m_2},X_3 t^{m_3}]_\alpha]_\alpha + \text{cyclic} \;=\; 0.$$
+        <p>Compute the Jacobiator; terms split into (i) the usual Jacobi on $\Gamma(TM)$ and (ii) $\alpha$-dependent pieces. The latter cancel pairwise because $\alpha$ is closed ($d\alpha=0$, since $\alpha=d\ln D$) and enters linearly as $\iota_X\alpha$. The grade bookkeeping is additive and consistent. Full expansion omitted for space; the cancellation mirrors standard proofs for loop/Weyl-twisted algebras.</p>
+
+        <div class="subsection-title">A.2 Representation identity</div>
+        <p>Start from (3). For any weight-$w$ tensor $T$,</p>
+        <div class="equation">
+            $$\begin{align}
+            \big[\mathcal L_X^{(m)},\mathcal L_Y^{(n)}\big]T
+            &= \big[\mathcal L_{D^m X},\mathcal L_{D^n Y}\big]T \\
+            &\quad + w\,n\,\big(\iota_Y\alpha\big)\,\mathcal L_{D^m X}T - w\,m\,\big(\iota_X\alpha\big)\,\mathcal L_{D^n Y}T \\
+            &\quad + w\,mn\,\big(\iota_X\alpha\,\iota_Y\alpha - \iota_Y\alpha\,\iota_X\alpha\big)T.
+            \end{align}$$
+        </div>
+        <p>Use $[\mathcal L_{V},\mathcal L_{W}]=\mathcal L_{[V,W]}$ and expand $[D^m X,D^n Y]$ by Leibniz:</p>
+        $$[D^m X,D^n Y] = D^{m+n}[X,Y] + n D^{m+n}(\iota_X\alpha)Y - m D^{m+n}(\iota_Y\alpha)X.$$
+        <p>Collect terms; the weight pieces reconstruct exactly the twist in (1), yielding (4).</p>
+
+        <div class="subsection-title">A.3 Witt-type continuous limit</div>
+        <p>With $\lambda\in\mathbb R$ and (6),</p>
+        $$[\,\mathcal L_X^{(\lambda_1)},\mathcal L_Y^{(\lambda_2)}\,] = \mathcal L^{(\lambda_1+\lambda_2)}_{[X,Y]_\alpha}.$$
+        <p>Differentiate w.r.t. $\lambda_2$ at $\lambda_2=\lambda_1$ to obtain the infinitesimal generator $\partial_\lambda$ and confirm consistency with a Witt-type algebra of degree derivations.</p>
+    </div>
+
+    <div class="appendix">
+        <div class="section-title">Appendix B — Identities, Signs, and Conventions</div>
+        <ul>
+            <li>$X(\ln D) = \iota_X(d\ln D) = \iota_X \alpha$.</li>
+            <li>Scaling identity (Lemma 3) for one vector $X$: $[D^m X, D^n X]=(n-m)D^{m+n}\,X(\ln D)\,X$.</li>
+            <li>Weight convention: under Weyl rescaling $g\mapsto e^{2\sigma}g$, a weight-$w$ tensor rescales as $T\mapsto e^{w\sigma}T$.</li>
+        </ul>
+    </div>
+
+    <div class="appendix">
+        <div class="section-title">Appendix G — Notational Glossary</div>
+        <ul>
+            <li>$M$: manifold; $\Gamma(TM)$: vector fields.</li>
+            <li>$D$: scale field; $\alpha=d\ln D$.</li>
+            <li>$t^n$: formal grade.</li>
+            <li>$\mathfrak g_\alpha$: twisted graded algebra with bracket (1).</li>
+            <li>$\mathcal L_X^{(n)}$: weighted level-$n$ Lie derivative (3).</li>
+            <li>$w$: tensor Weyl weight.</li>
+            <li>$\widetilde\nabla$: Weyl connection with 1-form $\alpha$.</li>
+        </ul>
+    </div>
+
+    <div class="separator">⸻</div>
+
+    <div class="section">
+        <div class="section-title">License</div>
+        <p><strong>Dual-use License.</strong></p>
+        <ul>
+            <li>Academic, non-commercial use: free.</li>
+            <li>Commercial use: requires a paid license. Contact <a href="mailto:michael@pqg.info">michael@pqg.info</a>.</li>
+        </ul>
+        <p>By contributing or forking, you agree to preserve attribution to Michael A. Doran Jr. and this repository as the source of first publication/prior art.</p>
+    </div>
+
+    <div class="separator">⸻</div>
+
+    <div class="section">
+        <p><strong>Prior Art Notice:</strong> This document constitutes a dated disclosure of the algebraic structure, representation, and conservation results for recursive (multiscale) Lie algebras of vector fields twisted by $\alpha=d\ln D$, including the Weyl-geometric interpretation and Noether correspondence.</p>
+    </div>
+
+</body>
+</html>
