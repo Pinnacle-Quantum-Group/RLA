@@ -1,11 +1,3 @@
-Perfect — this version will be a Markdown-native academic paper, designed for GitHub presentation (e.g. in a README or documentation site).
-All equations are rendered in LaTeX-compatible inline syntax ($ ... $ and $$ ... $$), so GitHub or any Markdown engine with MathJax will display them cleanly.
-
-Here’s the final integrated manuscript:
-(You can copy-paste this directly into a README.md file — it’s fully compliant with GitHub’s Markdown math renderer.)
-
-⸻
-
 Recursive Lie Algebras of Vector Fields: A Geometric Framework for Multiscale Symmetry
 
 Author: Michael A. Doran Jr.
