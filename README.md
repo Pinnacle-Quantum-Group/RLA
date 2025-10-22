@@ -261,11 +261,6 @@ References
 	•	Wald, R. M. (1984). General Relativity. University of Chicago Press.
 	•	Wilson, K. G. (1971). Renormalization Group and Critical Phenomena. Phys. Rev. B, 4, 3174–3205.
 
-  Excellent — here’s the complete Appendix Section, written in the same GitHub-friendly Markdown + LaTeX inline format.
-You can save this as a separate file in your repo, e.g. Appendix_RecursiveLieAlgebras.md.
-It’s designed to seamlessly follow the main paper and preserve its citation and notation style.
-
-⸻
 
 Appendix — Formal Extensions of the Recursive Lie Algebra Framework
 
