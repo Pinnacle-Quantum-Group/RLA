@@ -18,14 +18,16 @@ namespace RLA.JacobiIdentity
 
 structure LieAlgWithAlpha where
   L : Type*
-  inst_acg : AddCommGroup L
-  inst_mod : Module ℝ L
+  [inst_acg : AddCommGroup L]
+  [inst_mod : Module ℝ L]
   bracket : L → L → L
   alpha : L → ℝ
   lie_antisymm : ∀ X Y, bracket X Y = -bracket Y X
   lie_jacobi : ∀ X Y Z,
     bracket X (bracket Y Z) + bracket Y (bracket Z X) + bracket Z (bracket X Y) = 0
   alpha_linear : ∀ X Y, alpha (X + Y) = alpha X + alpha Y
+
+attribute [instance] LieAlgWithAlpha.inst_acg LieAlgWithAlpha.inst_mod
 
 variable (A : LieAlgWithAlpha)
 

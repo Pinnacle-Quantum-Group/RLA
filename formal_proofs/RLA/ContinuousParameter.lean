@@ -2,10 +2,10 @@
   RLA — Continuous Recursion Parameter (Proposition P8)
   Pinnacle Quantum Group — April 2026
 
-  Proves properties of the continuous recursion parameter λ ∈ ℝ:
-  - D^λ := e^{λ ln D} is well-defined for D > 0
-  - [L^(λ₁), L^(λ₂)] = L^{(λ₁+λ₂)} (grade additivity)
-  - Discretizing λ ∈ ℤ recovers the integer grading
+  Proves properties of the continuous recursion parameter lam ∈ ℝ:
+  - D^lam := e^{lam ln D} is well-defined for D > 0
+  - [L^(lam₁), L^(lam₂)] = L^{(lam₁+lam₂)} (grade additivity)
+  - Discretizing lam ∈ ℤ recovers the integer grading
   - Witt-type generator relation via differentiation
   Reference: RLA README §8, Appendix A.3
 -/
@@ -16,18 +16,18 @@ open Real
 
 namespace RLA.ContinuousParameter
 
-/-! ## 1. Continuous Scale Power: D^λ = e^{λ ln D} -/
+/-! ## 1. Continuous Scale Power: D^lam = e^{lam ln D} -/
 
-def continuousScale (D : ℝ) (hD : 0 < D) (λ : ℝ) : ℝ := D ^ λ
+def continuousScale (D : ℝ) (hD : 0 < D) (lam : ℝ) : ℝ := D ^ lam
 
-theorem continuous_scale_pos (D : ℝ) (hD : 0 < D) (λ : ℝ) :
-    0 < continuousScale D hD λ := rpow_pos_of_pos hD λ
+theorem continuous_scale_pos (D : ℝ) (hD : 0 < D) (lam : ℝ) :
+    0 < continuousScale D hD lam := rpow_pos_of_pos hD lam
 
-theorem continuous_scale_additive (D : ℝ) (hD : 0 < D) (λ₁ λ₂ : ℝ) :
-    continuousScale D hD (λ₁ + λ₂) =
-    continuousScale D hD λ₁ * continuousScale D hD λ₂ := by
+theorem continuous_scale_additive (D : ℝ) (hD : 0 < D) (lam₁ lam₂ : ℝ) :
+    continuousScale D hD (lam₁ + lam₂) =
+    continuousScale D hD lam₁ * continuousScale D hD lam₂ := by
   unfold continuousScale
-  exact rpow_add (le_of_lt hD) λ₁ λ₂
+  exact rpow_add hD lam₁ lam₂
 
 theorem continuous_scale_zero (D : ℝ) (hD : 0 < D) :
     continuousScale D hD 0 = 1 := rpow_zero D
@@ -35,17 +35,17 @@ theorem continuous_scale_zero (D : ℝ) (hD : 0 < D) :
 theorem continuous_scale_one (D : ℝ) (hD : 0 < D) :
     continuousScale D hD 1 = D := rpow_one D
 
-/-! ## 2. Integer Recovery: λ ∈ ℤ gives D^n -/
+/-! ## 2. Integer Recovery: lam ∈ ℤ gives D^n -/
 
 theorem integer_recovery (D : ℝ) (hD : 0 < D) (n : ℤ) :
     continuousScale D hD ↑n = D ^ n := by
   unfold continuousScale
-  exact rpow_intCast D n
+  exact rpow_int_cast D n
 
 theorem nat_recovery (D : ℝ) (hD : 0 < D) (n : ℕ) :
     continuousScale D hD ↑n = D ^ n := by
   unfold continuousScale
-  exact rpow_natCast D n
+  exact rpow_nat_cast D n
 
 /-! ## 3. Grade Additivity of Continuous Representation -/
 
@@ -55,23 +55,26 @@ structure ContinuousRepData where
   α : ℝ  -- ι_X(α)
   w : ℝ  -- tensor weight
 
-def continuousLieDeriv (rd : ContinuousRepData) (λ : ℝ) (T : ℝ) : ℝ :=
-  continuousScale rd.D rd.hD λ * T + rd.w * λ * rd.α * T
+def continuousLieDeriv (rd : ContinuousRepData) (lam : ℝ) (T : ℝ) : ℝ :=
+  continuousScale rd.D rd.hD lam * T + rd.w * lam * rd.α * T
 
-theorem P8_grade_sum (rd : ContinuousRepData) (λ₁ λ₂ : ℝ) :
-    λ₁ + λ₂ = (λ₁ + λ₂ : ℝ) := rfl
+theorem P8_grade_sum (rd : ContinuousRepData) (lam₁ lam₂ : ℝ) :
+    lam₁ + lam₂ = (lam₁ + lam₂ : ℝ) := rfl
 
-theorem P8_scale_composition (rd : ContinuousRepData) (λ₁ λ₂ : ℝ) :
-    continuousScale rd.D rd.hD λ₁ * continuousScale rd.D rd.hD λ₂ =
-    continuousScale rd.D rd.hD (λ₁ + λ₂) :=
-  (continuous_scale_additive rd.D rd.hD λ₁ λ₂).symm
+theorem P8_scale_composition (rd : ContinuousRepData) (lam₁ lam₂ : ℝ) :
+    continuousScale rd.D rd.hD lam₁ * continuousScale rd.D rd.hD lam₂ =
+    continuousScale rd.D rd.hD (lam₁ + lam₂) :=
+  (continuous_scale_additive rd.D rd.hD lam₁ lam₂).symm
 
-/-! ## 4. Witt-Type Generator: ∂/∂λ -/
+/-! ## 4. Witt-Type Generator: ∂/∂lam -/
 
-theorem witt_derivative_scale (D : ℝ) (hD : 0 < D) (λ : ℝ) :
-    HasDerivAt (continuousScale D hD) (log D * continuousScale D hD λ) λ := by
+theorem witt_derivative_scale (D : ℝ) (hD : 0 < D) (lam : ℝ) :
+    HasDerivAt (continuousScale D hD) (log D * continuousScale D hD lam) lam := by
   unfold continuousScale
-  exact hasDerivAt_rpow_const (Or.inl (le_of_lt hD))
+  -- D^x as a function of x has derivative D^x * log D (constant base)
+  have h := (Real.hasStrictDerivAt_const_rpow hD lam).hasDerivAt
+  convert h using 1
+  ring
 
 /-! ## 5. Continuous → Discrete Limit -/
 

@@ -57,7 +57,7 @@ theorem D_pow_additive (D : ℝ) (hD : D > 0) (m n : ℤ) :
   zpow_add₀ (ne_of_gt hD) m n
 
 theorem D_pow_pos (D : ℝ) (hD : D > 0) (n : ℤ) : 0 < D ^ n :=
-  zpow_pos (by linarith) n
+  zpow_pos_of_pos hD n
 
 /-! ## 7. Weight Scaling -/
 

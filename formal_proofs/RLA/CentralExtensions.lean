@@ -41,19 +41,54 @@ theorem virasoro_zero_diagonal (c : ℝ) (m : ℤ) :
   unfold virasoroCocycle
   by_cases hm : m + m = 0
   · right; omega
-  · left; simp [hm]
+  · left; rw [if_neg hm]
 
 /-! ## 3. Trivial Cocycle (Coboundary) -/
 
 def trivialCocycle (f : ℤ → ℝ) (m n : ℤ) : ℝ :=
   f (m + n) - f m - f n
 
-theorem trivial_is_cocycle (f : ℤ → ℝ) (hf : f 0 = 0) :
-    ∀ m n, trivialCocycle f m n = -trivialCocycle f n m := by
+/-- The coboundary `(δf)(m,n) := f(m+n) - f(m) - f(n)` is **symmetric**
+    under swap. This is the algebraic shadow of cohomological triviality:
+    a globally defined `f` means no orientation twist, hence no sign
+    flip on swap. Genuine 2-cocycles (e.g. `virasoroCocycle` at `c ≠ 0`)
+    are *antisymmetric* — that's the orientation obstruction that makes
+    the central extension nontrivial.
+
+    The Möbius-vs-cylinder distinction in cohomology form:
+    coboundary class = cylinder (no twist), nontrivial cocycle class =
+    Möbius (orientation obstruction). The original statement of this
+    theorem (with `-` on the RHS) collapsed exactly that distinction. -/
+theorem trivial_is_symmetric (f : ℤ → ℝ) :
+    ∀ m n, trivialCocycle f m n = trivialCocycle f n m := by
   intro m n
   unfold trivialCocycle
-  ring_nf
-  linarith [show m + n = n + m from add_comm m n]
+  rw [add_comm n m]; ring
+
+/-- A coboundary is the differential of a 1-cochain. Identical to
+    `trivialCocycle`; named here to make the cohomological role
+    visible at the type level. -/
+def coboundary (f : ℤ → ℝ) : ℤ → ℤ → ℝ :=
+  fun m n => f (m + n) - f m - f n
+
+theorem trivialCocycle_eq_coboundary (f : ℤ → ℝ) :
+    trivialCocycle f = coboundary f := rfl
+
+theorem coboundary_symmetric (f : ℤ → ℝ) (m n : ℤ) :
+    coboundary f m n = coboundary f n m := by
+  unfold coboundary; rw [add_comm n m]; ring
+
+/-- Cohomology classes intersect trivially on the diagonal: a 2-form
+    that is simultaneously a coboundary and antisymmetric must vanish
+    on every (m, m). Algebraic statement of "cylinders are not
+    Möbius strips." -/
+theorem coboundary_antisymm_intersection_trivial
+    (f : ℤ → ℝ) (h_antisymm : ∀ m n, coboundary f m n = -coboundary f n m) :
+    ∀ m, coboundary f m m = 0 := by
+  intro m
+  have h_sym := coboundary_symmetric f m m
+  have h_anti := h_antisymm m m
+  linarith
 
 /-! ## 4. Central Extension Construction -/
 
@@ -88,9 +123,35 @@ theorem witt_zero_cocycle : virasoroCocycle 0 = fun _ _ => 0 := by
 theorem nontrivial_virasoro (c : ℝ) (hc : c ≠ 0) :
     virasoroCocycle c 2 (-2) ≠ 0 := by
   unfold virasoroCocycle
-  simp
+  rw [if_pos (by norm_num : (2 : ℤ) + (-2) = 0)]
+  push_cast
   intro h
   apply hc
-  linarith
+  -- h : c/12 * (2 * (2^2 - 1)) = 0  ⇒  c = 0
+  linarith [show c / 12 * (2 * ((2 : ℝ) ^ 2 - 1)) = c / 2 from by ring]
+
+/-- Cohomology nontriviality: for `c ≠ 0`, the Virasoro cocycle is NOT
+    a coboundary. This is what makes the central extension nontrivial
+    and the spectral partition (Σ ≠ 0 vs Σ = 0 in FIL_Langlands)
+    detectable. The orientation/Möbius statement in formal dress:
+    coboundaries (cylinders) cannot equal antisymmetric Virasoro
+    cocycles (Möbius) when the central charge is nonzero. -/
+theorem central_extension_nontrivial (c : ℝ) (hc : c ≠ 0) :
+    ¬ ∃ f : ℤ → ℝ, ∀ m n, virasoroCocycle c m n = coboundary f m n := by
+  rintro ⟨f, hf⟩
+  -- virasoroCocycle is antisymmetric; coboundary is symmetric.
+  -- If virasoro = coboundary pointwise, then virasoro at (2,-2) equals
+  -- virasoro at (-2,2), which combined with antisymmetry forces it to 0,
+  -- contradicting nontrivial_virasoro.
+  have h_anti := virasoro_antisymmetric c 2 (-2)
+  have h_sym := coboundary_symmetric f 2 (-2)
+  have h1 := hf 2 (-2)
+  have h2 := hf (-2) 2
+  -- v(2,-2) = c(2,-2) = c(-2,2) = v(-2,2)
+  have h_eq : virasoroCocycle c 2 (-2) = virasoroCocycle c (-2) 2 :=
+    h1.trans (h_sym.trans h2.symm)
+  -- combine with v(2,-2) = -v(-2,2) to get v(2,-2) = 0
+  have h_zero : virasoroCocycle c 2 (-2) = 0 := by linarith
+  exact nontrivial_virasoro c hc h_zero
 
 end RLA.CentralExtensions

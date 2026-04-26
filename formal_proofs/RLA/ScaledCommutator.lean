@@ -62,7 +62,7 @@ theorem L3_linear_in_grade_diff (d : ScaledCommutatorData) (m n : ℤ) :
     d.D ^ (m + n) * d.X_alpha = 0 := by
   by_cases h : d.D ^ (m + n) * d.X_alpha = 0
   · right; exact h
-  · left; unfold L3_commutator; field_simp
+  · left; unfold L3_commutator; field_simp; ring
 
 /-! ## 4. Leibniz Expansion Detail -/
 
