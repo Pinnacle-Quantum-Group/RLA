@@ -27,7 +27,7 @@ theorem continuous_scale_additive (D : ℝ) (hD : 0 < D) (lam₁ lam₂ : ℝ) :
     continuousScale D hD (lam₁ + lam₂) =
     continuousScale D hD lam₁ * continuousScale D hD lam₂ := by
   unfold continuousScale
-  exact rpow_add (le_of_lt hD) lam₁ lam₂
+  exact rpow_add hD lam₁ lam₂
 
 theorem continuous_scale_zero (D : ℝ) (hD : 0 < D) :
     continuousScale D hD 0 = 1 := rpow_zero D
@@ -40,12 +40,12 @@ theorem continuous_scale_one (D : ℝ) (hD : 0 < D) :
 theorem integer_recovery (D : ℝ) (hD : 0 < D) (n : ℤ) :
     continuousScale D hD ↑n = D ^ n := by
   unfold continuousScale
-  exact rpow_intCast D n
+  exact rpow_int_cast D n
 
 theorem nat_recovery (D : ℝ) (hD : 0 < D) (n : ℕ) :
     continuousScale D hD ↑n = D ^ n := by
   unfold continuousScale
-  exact rpow_natCast D n
+  exact rpow_nat_cast D n
 
 /-! ## 3. Grade Additivity of Continuous Representation -/
 
@@ -71,7 +71,7 @@ theorem P8_scale_composition (rd : ContinuousRepData) (lam₁ lam₂ : ℝ) :
 theorem witt_derivative_scale (D : ℝ) (hD : 0 < D) (lam : ℝ) :
     HasDerivAt (continuousScale D hD) (log D * continuousScale D hD lam) lam := by
   unfold continuousScale
-  exact hasDerivAt_rpow_const (Or.inl (le_of_lt hD))
+  exact hasDerivAt_rpow_const (Or.inl (ne_of_gt hD))
 
 /-! ## 5. Continuous → Discrete Limit -/
 

@@ -48,12 +48,16 @@ theorem virasoro_zero_diagonal (c : ℝ) (m : ℤ) :
 def trivialCocycle (f : ℤ → ℝ) (m n : ℤ) : ℝ :=
   f (m + n) - f m - f n
 
+/-- NOTE: theorem statement is mathematically wrong as stated.
+    The coboundary `df(m,n) = f(m+n) - f m - f n` is **symmetric**,
+    not antisymmetric: `df(m,n) = df(n,m)` since `m+n = n+m`. To get
+    `df(m,n) = -df(n,m)` we'd need `f(m+n) = f m + f n` (additivity)
+    plus the symmetric form, which collapses to `df = 0`. Either restate
+    as symmetry, or assume f additive. Stubbed with `sorry` until
+    the intended statement is clarified. -/
 theorem trivial_is_cocycle (f : ℤ → ℝ) (hf : f 0 = 0) :
     ∀ m n, trivialCocycle f m n = -trivialCocycle f n m := by
-  intro m n
-  unfold trivialCocycle
-  rw [show m + n = n + m from add_comm m n]
-  ring
+  sorry
 
 /-! ## 4. Central Extension Construction -/
 
