@@ -41,7 +41,7 @@ theorem virasoro_zero_diagonal (c : ℝ) (m : ℤ) :
   unfold virasoroCocycle
   by_cases hm : m + m = 0
   · right; omega
-  · left; simp [hm]
+  · left; rw [if_neg hm]
 
 /-! ## 3. Trivial Cocycle (Coboundary) -/
 
@@ -52,8 +52,8 @@ theorem trivial_is_cocycle (f : ℤ → ℝ) (hf : f 0 = 0) :
     ∀ m n, trivialCocycle f m n = -trivialCocycle f n m := by
   intro m n
   unfold trivialCocycle
-  ring_nf
-  linarith [show m + n = n + m from add_comm m n]
+  rw [show m + n = n + m from add_comm m n]
+  ring
 
 /-! ## 4. Central Extension Construction -/
 
@@ -88,9 +88,11 @@ theorem witt_zero_cocycle : virasoroCocycle 0 = fun _ _ => 0 := by
 theorem nontrivial_virasoro (c : ℝ) (hc : c ≠ 0) :
     virasoroCocycle c 2 (-2) ≠ 0 := by
   unfold virasoroCocycle
-  simp
+  rw [if_pos (by norm_num : (2 : ℤ) + (-2) = 0)]
+  push_cast
   intro h
   apply hc
-  linarith
+  -- h : c/12 * (2 * (2^2 - 1)) = 0  ⇒  c = 0
+  linarith [show c / 12 * (2 * ((2 : ℝ) ^ 2 - 1)) = c / 2 from by ring]
 
 end RLA.CentralExtensions

@@ -31,7 +31,9 @@ theorem nonmetricity_vanishes_iff (α g : ℝ) (hg : g ≠ 0) :
     nonMetricity α g = 0 ↔ α = 0 := by
   unfold nonMetricity
   constructor
-  · intro h; nlinarith
+  · intro h
+    have h1 : α * g = 0 := by linarith
+    exact (mul_eq_zero.mp h1).resolve_right hg
   · intro h; rw [h]; ring
 
 /-! ## 3. α = 0 Recovers Levi-Civita -/
@@ -89,6 +91,7 @@ theorem scale_composition (σ₁ σ₂ : ℝ) :
 theorem alpha_additive (σ₁ σ₂ : ℝ) :
     alphaFromScale (σ₁ + σ₂) = alphaFromScale σ₁ + alphaFromScale σ₂ := by
   unfold alphaFromScale
+  rfl
 
 /-! ## 7. Weyl Rescaling of Tensor Weight -/
 
@@ -97,7 +100,8 @@ def weylRescale (T σ : ℝ) (w : ℤ) : ℝ := exp (↑w * σ) * T
 theorem rescale_composition (T σ₁ σ₂ : ℝ) (w : ℤ) :
     weylRescale (weylRescale T σ₁ w) σ₂ w = weylRescale T (σ₁ + σ₂) w := by
   unfold weylRescale
-  rw [← exp_add]; ring_nf
+  rw [show (↑w * (σ₁ + σ₂) : ℝ) = ↑w * σ₁ + ↑w * σ₂ from by ring, exp_add]
+  ring
 
 theorem rescale_identity (T : ℝ) (w : ℤ) :
     weylRescale T 0 w = T := by
