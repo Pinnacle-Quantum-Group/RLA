@@ -71,7 +71,10 @@ theorem P8_scale_composition (rd : ContinuousRepData) (lam₁ lam₂ : ℝ) :
 theorem witt_derivative_scale (D : ℝ) (hD : 0 < D) (lam : ℝ) :
     HasDerivAt (continuousScale D hD) (log D * continuousScale D hD lam) lam := by
   unfold continuousScale
-  exact hasDerivAt_rpow_const (Or.inl (ne_of_gt hD))
+  -- D^x as a function of x has derivative D^x * log D (constant base)
+  have h := (Real.hasStrictDerivAt_const_rpow hD lam).hasDerivAt
+  convert h using 1
+  ring
 
 /-! ## 5. Continuous → Discrete Limit -/
 
