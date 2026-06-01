@@ -235,22 +235,40 @@ theorem mixing_entropy_nondecreasing (U : Evolution n) (ν : NoiseInjection n)
     ν.nondecreasing (pushforward U p) (pushforward_isDistribution U p hp)
   linarith
 
-/-- **STATEMENT (deferred):** XOR with an independent noise source is a valid
-    entropy-non-decreasing `NoiseInjection`. This is the discrete entropy-power
-    inequality / "conditioning reduces entropy, mixing increases it" fact on the
-    abelian group `(ℤ/2)^k`: for independent `X, Z`, `H(X ⊕ Z) ≥ max(H(X),H(Z))`.
+/-- "XOR with independent noise", modeled faithfully and *soundly*. XORing the
+    state with an independent noise symbol `z` (distribution `w`) is exactly the
+    `w`-mixture of the translations `s ↦ s ⊕ z`; each translation is a
+    measure-preserving permutation `g a : Evolution n`. So the noise injection is
+    a convex mixture of entropy-preserving pushforwards — not an arbitrary map. -/
+def noiseMixture {m : ℕ} (g : Fin (m + 1) → Evolution n) (w : Fin (m + 1) → ℝ)
+    (p : State n → ℝ) : State n → ℝ :=
+  fun s => ∑ a, w a * pushforward (g a) p s
 
-    PROOF DEFERRED (`sorry`). Standard reference: Cover & Thomas, *Elements of
-    Information Theory*, Thm 2.6.5 (entropy and convolution); Shannon 1948.
-    The Mathlib-level proof needs the convolution-of-pmf entropy machinery,
-    which is not available under the pinned Mathlib v4.5.0 — hence deferred.
-    Everything *downstream* (`mixing_entropy_nondecreasing`) is proved from the
-    abstract `NoiseInjection` contract this lemma would discharge. -/
-theorem xor_noise_nondecreasing (n : ℕ)
-    (xorMix : (State n → ℝ) → (State n → ℝ))
-    (hpres : ∀ p, IsDistribution p → IsDistribution (xorMix p)) :
-    ∀ p, IsDistribution p → shannonEntropy p ≤ shannonEntropy (xorMix p) := by
-  sorry  -- discrete entropy-power inequality on (ℤ/2)^k; see citation above.
+/-- **STATEMENT (deferred):** XOR with an independent noise source never
+    decreases Shannon entropy. Modeled (soundly) as a convex `w`-mixture over an
+    independent-noise distribution `w` of pushforwards by translations `g a`:
+        `H(noiseMixture g w p) ≥ H(p)`.
+    This is the discrete entropy-power / "mixing increases entropy" inequality,
+    here a direct consequence of the **concavity of Shannon entropy**: each
+    `pushforward (g a) p` has entropy `H(p)` (T7), and a convex combination of
+    distributions of common entropy `H(p)` has entropy `≥ H(p)`.
+
+    Crucially the hypotheses now pin the *structure* (a distribution `w` over
+    measure-preserving maps), so — unlike a bare distribution-preserving map — an
+    entropy-destroying operator (e.g. one returning a point mass) is NOT of this
+    form and cannot be substituted. The statement is therefore sound; the `sorry`
+    defers only the (true) concavity/Jensen step.
+
+    Reference: Cover & Thomas, *Elements of Information Theory*, Thm 2.6.5;
+    Shannon 1948. Concavity-of-entropy / Jensen at the needed generality is not
+    developed under the pinned Mathlib v4.5.0 — hence deferred. Everything
+    downstream (`mixing_entropy_nondecreasing`) is proved from the abstract
+    `NoiseInjection` contract this lemma discharges. -/
+theorem xor_noise_nondecreasing {m : ℕ} (g : Fin (m + 1) → Evolution n)
+    (w : Fin (m + 1) → ℝ) (hw_nonneg : ∀ a, 0 ≤ w a) (hw_sum : ∑ a, w a = 1)
+    (p : State n → ℝ) (hp : IsDistribution p) :
+    shannonEntropy p ≤ shannonEntropy (noiseMixture g w p) := by
+  sorry  -- concavity of Shannon entropy (Jensen); structure now pinned. See above.
 
 /-! ## 8. Summary (the DM-TRNG entropy anchor)
 
