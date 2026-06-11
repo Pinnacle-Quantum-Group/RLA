@@ -325,7 +325,9 @@ theorem xor_noise_nondecreasing {m : ℕ} (g : Fin (m + 1) → Evolution n)
       apply gibbs_pointwise (hq_nonneg a s) (hQ_nonneg s)
       intro hq_pos
       exact lt_of_lt_of_le (mul_pos hwa hq_pos) (hQ_ge a s)
-    have hsum := Finset.sum_le_sum (fun s _ => hpt s)
+    have hsum : ∑ s, (q a s - noiseMixture g w p s) ≤
+        ∑ s, (q a s * log (q a s) - q a s * log (noiseMixture g w p s)) :=
+      Finset.sum_le_sum (fun s _ => hpt s)
     rw [Finset.sum_sub_distrib, hq_sum a, hQ_sum, sub_self,
       Finset.sum_sub_distrib] at hsum
     -- hsum : 0 ≤ ∑ q·log q − ∑ q·log Q. Translate to the 1/x form.
