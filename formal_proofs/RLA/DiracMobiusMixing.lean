@@ -244,31 +244,128 @@ def noiseMixture {m : ℕ} (g : Fin (m + 1) → Evolution n) (w : Fin (m + 1) �
     (p : State n → ℝ) : State n → ℝ :=
   fun s => ∑ a, w a * pushforward (g a) p s
 
-/-- **STATEMENT (deferred):** XOR with an independent noise source never
-    decreases Shannon entropy. Modeled (soundly) as a convex `w`-mixture over an
-    independent-noise distribution `w` of pushforwards by translations `g a`:
-        `H(noiseMixture g w p) ≥ H(p)`.
-    This is the discrete entropy-power / "mixing increases entropy" inequality,
-    here a direct consequence of the **concavity of Shannon entropy**: each
-    `pushforward (g a) p` has entropy `H(p)` (T7), and a convex combination of
-    distributions of common entropy `H(p)` has entropy `≥ H(p)`.
+/-- **Pointwise Gibbs inequality.** For `x, y ≥ 0` with `y > 0` whenever
+    `x > 0`: `x − y ≤ x·log x − x·log y`. This is the per-coordinate kernel of
+    `D(p‖q) ≥ 0`, proved from `log t ≤ t − 1`. Lean's junk value `log 0 = 0`
+    is harmless: the `x = 0` case reduces to `−y ≤ 0`. -/
+private lemma gibbs_pointwise {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y)
+    (hxy : 0 < x → 0 < y) : x - y ≤ x * log x - x * log y := by
+  rcases eq_or_lt_of_le hx with h0 | hx_pos
+  · -- x = 0: LHS = −y ≤ 0 = RHS.
+    rw [← h0]
+    simp [hy]
+  · have hy_pos : 0 < y := hxy hx_pos
+    -- log (y/x) ≤ y/x − 1, scaled by x > 0, gives x·log y − x·log x ≤ y − x.
+    have hlog := log_le_sub_one_of_pos (div_pos hy_pos hx_pos)
+    rw [log_div hy_pos.ne' hx_pos.ne'] at hlog
+    have hmul := mul_le_mul_of_nonneg_left hlog hx_pos.le
+    have hxyx : x * (y / x - 1) = y - x := by
+      rw [mul_sub, mul_one, mul_comm, div_mul_cancel y hx_pos.ne']
+    rw [hxyx, mul_sub] at hmul
+    linarith
 
-    Crucially the hypotheses now pin the *structure* (a distribution `w` over
-    measure-preserving maps), so — unlike a bare distribution-preserving map — an
-    entropy-destroying operator (e.g. one returning a point mass) is NOT of this
-    form and cannot be substituted. The statement is therefore sound; the `sorry`
-    defers only the (true) concavity/Jensen step.
+/-- XOR with an independent noise source never decreases Shannon entropy.
+    Modeled (soundly) as a convex `w`-mixture over an independent-noise
+    distribution `w` of pushforwards by translations `g a`:
+        `H(noiseMixture g w p) ≥ H(p)`.
+    This is the discrete "mixing increases entropy" inequality — concavity of
+    Shannon entropy. PROOF: decompose `H(Q)` of the mixture `Q = ∑ₐ wₐ·qₐ`
+    (with `qₐ = pushforward (g a) p`) as `∑ₐ wₐ·∑ₛ qₐ(s)·log(1/Q s)`, bound
+    each inner sum below by `H(qₐ)` via the Gibbs inequality
+    (`∑ₛ qₐ log(qₐ/Q) ≥ ∑ₛ (qₐ − Q) = 0`), and use `H(qₐ) = H(p)` (T7,
+    pushforward by a permutation conserves entropy) with `∑ₐ wₐ = 1`.
+
+    Crucially the hypotheses pin the *structure* (a distribution `w` over
+    measure-preserving maps), so — unlike a bare distribution-preserving map —
+    an entropy-destroying operator (e.g. one returning a point mass) is NOT of
+    this form and cannot be substituted.
 
     Reference: Cover & Thomas, *Elements of Information Theory*, Thm 2.6.5;
-    Shannon 1948. Concavity-of-entropy / Jensen at the needed generality is not
-    developed under the pinned Mathlib v4.5.0 — hence deferred. Everything
-    downstream (`mixing_entropy_nondecreasing`) is proved from the abstract
-    `NoiseInjection` contract this lemma discharges. -/
+    Shannon 1948. -/
 theorem xor_noise_nondecreasing {m : ℕ} (g : Fin (m + 1) → Evolution n)
     (w : Fin (m + 1) → ℝ) (hw_nonneg : ∀ a, 0 ≤ w a) (hw_sum : ∑ a, w a = 1)
     (p : State n → ℝ) (hp : IsDistribution p) :
     shannonEntropy p ≤ shannonEntropy (noiseMixture g w p) := by
-  sorry  -- concavity of Shannon entropy (Jensen); structure now pinned. See above.
+  obtain ⟨hp_nonneg, hp_sum⟩ := hp
+  -- Per-seed pushforward distributions and the mixture.
+  set q : Fin (m + 1) → State n → ℝ := fun a => pushforward (g a) p with hq_def
+  have hq_nonneg : ∀ a s, 0 ≤ q a s := fun a s => hp_nonneg _
+  have hq_sum : ∀ a, ∑ s, q a s = 1 := fun a => by
+    rw [hq_def]
+    show ∑ s, pushforward (g a) p s = 1
+    rw [pushforward_sum]
+    exact hp_sum
+  have hQ_eq : ∀ s, noiseMixture g w p s = ∑ a, w a * q a s := fun s => rfl
+  have hQ_nonneg : ∀ s, 0 ≤ noiseMixture g w p s := fun s => by
+    rw [hQ_eq]
+    exact Finset.sum_nonneg fun a _ => mul_nonneg (hw_nonneg a) (hq_nonneg a s)
+  have hQ_sum : ∑ s, noiseMixture g w p s = 1 := by
+    calc ∑ s, noiseMixture g w p s = ∑ s, ∑ a, w a * q a s := by
+          exact Finset.sum_congr rfl fun s _ => hQ_eq s
+      _ = ∑ a, ∑ s, w a * q a s := Finset.sum_comm
+      _ = ∑ a, w a * ∑ s, q a s := by
+          exact Finset.sum_congr rfl fun a _ => (Finset.mul_sum _ _ _).symm
+      _ = ∑ a, w a := by
+          exact Finset.sum_congr rfl fun a _ => by rw [hq_sum a, mul_one]
+      _ = 1 := hw_sum
+  -- Each weighted component is dominated by the mixture coordinatewise.
+  have hQ_ge : ∀ a s, w a * q a s ≤ noiseMixture g w p s := by
+    intro a s
+    rw [hQ_eq]
+    exact Finset.single_le_sum
+      (f := fun b => w b * q b s)
+      (fun b _ => mul_nonneg (hw_nonneg b) (hq_nonneg b s)) (Finset.mem_univ a)
+  -- Summed Gibbs inequality per seed with positive weight.
+  have gibbs_sum : ∀ a, 0 < w a →
+      ∑ s, q a s * log (1 / q a s) ≤ ∑ s, q a s * log (1 / noiseMixture g w p s) := by
+    intro a hwa
+    have hpt : ∀ s, q a s - noiseMixture g w p s ≤
+        q a s * log (q a s) - q a s * log (noiseMixture g w p s) := by
+      intro s
+      apply gibbs_pointwise (hq_nonneg a s) (hQ_nonneg s)
+      intro hq_pos
+      exact lt_of_lt_of_le (mul_pos hwa hq_pos) (hQ_ge a s)
+    have hsum := Finset.sum_le_sum (fun s _ => hpt s)
+    rw [Finset.sum_sub_distrib, hq_sum a, hQ_sum, sub_self,
+      Finset.sum_sub_distrib] at hsum
+    -- hsum : 0 ≤ ∑ q·log q − ∑ q·log Q. Translate to the 1/x form.
+    have hlhs : ∑ s, q a s * log (1 / q a s) = -∑ s, q a s * log (q a s) := by
+      rw [← Finset.sum_neg_distrib]
+      exact Finset.sum_congr rfl fun s _ => by rw [one_div, log_inv, mul_neg]
+    have hrhs : ∑ s, q a s * log (1 / noiseMixture g w p s)
+        = -∑ s, q a s * log (noiseMixture g w p s) := by
+      rw [← Finset.sum_neg_distrib]
+      exact Finset.sum_congr rfl fun s _ => by rw [one_div, log_inv, mul_neg]
+    rw [hlhs, hrhs]
+    linarith
+  -- Decompose the mixture entropy and assemble.
+  have hH_decomp : shannonEntropy (noiseMixture g w p)
+      = ∑ a, w a * ∑ s, q a s * log (1 / noiseMixture g w p s) := by
+    unfold shannonEntropy
+    calc ∑ s, noiseMixture g w p s * log (1 / noiseMixture g w p s)
+        = ∑ s, ∑ a, w a * q a s * log (1 / noiseMixture g w p s) := by
+          refine Finset.sum_congr rfl fun s _ => ?_
+          rw [hQ_eq s, Finset.sum_mul]
+      _ = ∑ a, ∑ s, w a * q a s * log (1 / noiseMixture g w p s) :=
+          Finset.sum_comm
+      _ = ∑ a, w a * ∑ s, q a s * log (1 / noiseMixture g w p s) := by
+          refine Finset.sum_congr rfl fun a _ => ?_
+          rw [Finset.mul_sum]
+          exact Finset.sum_congr rfl fun s _ => by ring
+  have hHa : ∀ a, ∑ s, q a s * log (1 / q a s) = shannonEntropy p := fun a =>
+    T7_shannon_pushforward_eq (g a) p
+  calc shannonEntropy p
+      = ∑ a, w a * shannonEntropy p := by
+        rw [← Finset.sum_mul, hw_sum, one_mul]
+    _ ≤ ∑ a, w a * ∑ s, q a s * log (1 / noiseMixture g w p s) := by
+        apply Finset.sum_le_sum
+        intro a _
+        rcases eq_or_lt_of_le (hw_nonneg a) with h0 | hpos
+        · rw [← h0, zero_mul, zero_mul]
+        · apply mul_le_mul_of_nonneg_left _ hpos.le
+          rw [← hHa a]
+          exact gibbs_sum a hpos
+    _ = shannonEntropy (noiseMixture g w p) := hH_decomp.symm
 
 /-! ## 8. Summary (the DM-TRNG entropy anchor)
 
