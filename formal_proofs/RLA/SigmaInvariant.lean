@@ -72,10 +72,12 @@ theorem pcount_flipAt (i : Fin n) (w : Fin n → Bool) :
       = bit (flipAt i w i) - bit (w i) := by
     refine Finset.sum_eq_single i ?_ ?_
     · intro j _ hj
-      simp only [flipAt]; rw [if_neg hj]; ring
+      have hjw : flipAt i w j = w j := by simp [flipAt, hj]
+      rw [hjw]; ring
     · intro h; exact absurd (mem_univ i) h
   have hi : bit (flipAt i w i) - bit (w i) = 1 - 2 * bit (w i) := by
-    simp only [flipAt]; rw [if_pos rfl, bit_not]; ring
+    have hii : flipAt i w i = !(w i) := by simp [flipAt]
+    rw [hii, bit_not]; ring
   have := hdiff.trans (hsingle.trans hi)
   linarith [this]
 
