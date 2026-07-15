@@ -22,7 +22,7 @@ import Mathlib
 
 namespace RLA.SigmaInvariant
 
-open Finset
+open Finset BigOperators
 
 variable {n : ℕ}
 
