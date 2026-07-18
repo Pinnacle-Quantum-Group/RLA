@@ -404,3 +404,52 @@ By contributing or forking, you agree to preserve attribution to Michael A. Dora
 ⸻
 
 Prior Art Notice: This README.md constitutes a dated disclosure of the algebraic structure, representation, and conservation results for recursive (multiscale) Lie algebras of vector fields twisted by \alpha=d\ln D, including the Weyl-geometric interpretation and Noether correspondence.
+
+
+---
+
+## Machine-Checked Verification and Falsifiability
+
+The core results above are formalized in Lean 4 (against a pinned Mathlib
+snapshot) under [`formal_proofs/RLA/`](formal_proofs/RLA/). Every push
+builds all proof files and audits their axiom footprint in CI
+([`.github/workflows/lean.yml`](.github/workflows/lean.yml)).
+
+### Claim → theorem map
+
+| Claim | Lean theorem | File |
+|---|---|---|
+| Twisted Jacobi identity under α-closure | `RLA.JacobiIdentity.twisted_jacobi_holds` | `JacobiIdentity.lean` |
+| Commutator representation property | `RLA.RepresentationProperty.commutator_representation` | `RepresentationProperty.lean` |
+| L3: scaled-commutator antisymmetry | `RLA.ScaledCommutator.L3_antisymmetric` | `ScaledCommutator.lean` |
+| Weyl geometry: non-metricity vanishes iff α = 0 | `RLA.WeylGeometry.nonmetricity_vanishes_iff` | `WeylGeometry.lean` |
+| T7: min-entropy invariant under Möbius pushforward | `RLA.DiracMobiusMixing.T7_minEntropy_value_eq` | `DiracMobiusMixing.lean` |
+| XOR-noise mixing never decreases entropy | `RLA.DiracMobiusMixing.xor_noise_nondecreasing` | `DiracMobiusMixing.lean` |
+
+The full audited list lives in
+[`formal_proofs/RLA/AxiomAudit.lean`](formal_proofs/RLA/AxiomAudit.lean).
+
+### Reproducing the verification
+
+```bash
+lake exe cache get   # fetch the Mathlib olean cache (optional, much faster)
+lake build           # compile every module under formal_proofs/
+lake env lean formal_proofs/RLA/AxiomAudit.lean   # axiom footprint of each headline theorem
+```
+
+The toolchain is pinned by `lean-toolchain` and the dependency graph by
+`lake-manifest.json`, so verification runs against the same Mathlib
+snapshot everywhere.
+
+### What would falsify these results
+
+* **A broken proof.** Any change that invalidates a proof fails `lake build`
+  and therefore CI — the theorems cannot silently regress.
+* **An admitted or asserted result.** CI rejects admitted proofs (`sorryAx`)
+  and any custom axiom declaration. The trust base is exactly
+  `propext`, `Classical.choice`, `Quot.sound` — Lean's standard axioms.
+* **A mis-formalized statement.** What remains to trust is that each Lean
+  statement faithfully renders the informal claim. The claim → theorem map
+  above exists precisely so this can be checked: refuting a result here
+  means exhibiting a mismatch between a theorem statement and the claim it
+  formalizes — not taking the prose on faith.
